@@ -2,13 +2,16 @@
 
 ## "UNIX is an IDE"
 I've heard this many times, nonetheless there are IDE's for Linux (like any other polatform), even if many tools (like build systems, static and dynamic analyzers, test suites, and so on) are not integrated in all the IDE's.
-Devbox is born as an idea to extend the file manager, a simple menu entry where to start programs related to programming. Have adirectory with a cmake project? Just open it with your IDE (if it supports cmake), o with cmake-gui to generate a project. Or lets execute a static analyzer on you project, or a dynamic one, like Dr. Memory or Valgrind.
+Devbox is born as an idea to extend the file manager, a simple menu entry where to start programs related to programming. Do you have adirectory with a cmake project? Just open it with your IDE, o with cmake-gui to generate a project for you favourite IDE. Or lets execute a static analyzer on your project, or a dynamic one, like Dr. Memory or Valgrind. Or lets see some details about your files, like hashsums, if they have certain properties (like binaries being compiled with FORTIFY_SOURCE, or manifests on Windows, or the list of exported functions for shared libraries)
 
 Probably in the long term, the terminal is still a better choice for moste of the tools, but sometimes it's simply nice to make simple thing simple, just a click away.
 
 ## Status of the project
 This is more a toy project, I've tried to create a plugin for caja, the file manager of Mate, since it is the desktop environment I'm using. I wanted to use C++ as programming language (and not C), even if alla samples found are in C or python. The plugin works, but it's in alpha status, with many unanswered question (I have never used glib before).
 Contributions are welcome, I've structured the project with the idea to extend it for other file managers (Explorer of Windows, Nemo of Gnome, Dolphin of KDE and so on...), even if I will work on this project only in my spare time.
+
+
+Some of you may think that C++ (or C or some other "low level" languages) aren't the right decision for this kind of task, since most of the time devbox is just about invoking other tools and maybe parsing theyr result, and probably you are right, with a "scripting language" you may achieve the same result in less time. Nonetheless the project is still in C++.
 
 
 ## Build
