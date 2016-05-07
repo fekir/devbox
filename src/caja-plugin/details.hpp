@@ -107,11 +107,6 @@ namespace details{
 
 	// cmake and qt can safely use it
 	void generic_gui_callback(CajaMenuItem* item, gpointer file_);
-
-	// sample using different callback
-	void cmake_gui_callback(CajaMenuItem* item, gpointer file_);
 }
-
-
 
 #endif
