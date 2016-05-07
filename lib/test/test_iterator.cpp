@@ -140,3 +140,11 @@ TEST_CASE("count3", ""){
 	REQUIRE(compare_size(list, 5) < 0);
 	REQUIRE(compare_size(list, 0) == 0);
 }
+
+TEST_CASE("to_vector", ""){
+	GList* list = createlist();
+	std::vector<TestStruct*> vec = to_vector<TestStruct>(list);
+	REQUIRE(vec.size() == size(list));
+	REQUIRE(vec.at(0) == list->data);
+	REQUIRE(vec.at(1) == list->next->data);
+}
