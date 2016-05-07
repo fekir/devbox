@@ -115,30 +115,6 @@ namespace details{
 		menu_provider_iface->get_background_items = details::get_background_items;
 	}
 
-	std::vector<CajaMenuItem*> create_cmake_menu_items(CajaFileInfo& file_info, std::vector<command_and_menu>& cmake_parsers){
-		std::vector<CajaMenuItem*> toreturn; toreturn.reserve(cmake_parsers.size());
-		for(auto& v : cmake_parsers){
-			bool add_el = (v.check_if_add == nullptr) ? true : v.check_if_add(&file_info);
-			if(!add_el){
-				continue;
-			}
-			const std::string program = !v.menu_title.empty() ? v.menu_title :
-																get_name(v.cmake_command); // fixme, only command, no path
-			const std::string title = "fekir::" + program;
-			const std::string label = !v.menu_label.empty() ? v.menu_label :
-															  "Open file with " + program;
-			const std::string tip = !v.menu_tip.empty() ? v.menu_tip :
-														  "Open file with " + program;\
-			auto item = caja_menu_item_new
-					(title.c_str(), label.c_str(), tip.c_str(), v.menu_icon.c_str());
-			g_object_set_data (G_OBJECT (item), "fekir::command", &v.cmake_command[0]);
-			// FIXME: here we have allocated memory with strdup, but who is going to free it???
-			// set_data doesn't copy the content (takes a void*)
-			toreturn.push_back(item);
-		}
-		return toreturn;
-	}
-
 	GList* get_file_items(CajaMenuProvider *provider, GtkWidget *window, GList *files) {
 		(void)provider;
 		(void)window;

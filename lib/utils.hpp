@@ -118,30 +118,6 @@ inline std::string is_cmake_project(const std::vector<std::string>& files){
 	return "";
 }
 
-inline void cmake_callback(CajaMenuItem* item, gpointer file_){
-	(void)item;
-	auto file = reinterpret_cast<CajaFileInfo*>(file_);
-	std::string program = "/usr/bin/cmake-gui";
-	std::string param = get_path(file);
-	char* const args[] = {&program[0], &param[0],  nullptr};
-	const pid_t child_pid = fork();
-	if (child_pid == 0) {  // in child
-		execve(args[0], args, environ); // check != -1
-	}
-}
-
-inline void qt_callback(CajaMenuItem* item, gpointer file_){
-	(void)item;
-	auto file = reinterpret_cast<CajaFileInfo*>(file_);
-	std::string program = "/usr/bin/qtcreator";
-	std::string param = get_path(file);
-	char* const args[] = {&program[0], &param[0],  nullptr};
-	const pid_t child_pid = fork();
-	if (child_pid == 0) {  // in child
-		execve(args[0], args, environ); // check != -1
-	}
-}
-
 inline void jpegoptim_callback(CajaMenuItem* item, gpointer file_){
 	(void)item;
 	auto file = reinterpret_cast<CajaFileInfo*>(file_);
@@ -153,49 +129,8 @@ inline void jpegoptim_callback(CajaMenuItem* item, gpointer file_){
 		execve(args[0], args, environ); // check != -1
 	}
 }
-/**/
-inline void create_cmake_menu(CajaMenu *menu_root, CajaFileInfo* file_info){
-	if(!caja_file_info_is_directory(file_info)){
-		gchar_handle n (caja_file_info_get_name(file_info));
-		std::string name =  (n == nullptr) ? "" : n.get();
-		if(std::find(cmake_files.begin(), cmake_files.end(), name) == cmake_files.end()){
-			return;
-		}
-	}
-	auto path = get_path(file_info);
-	if(!dir_contains(path, cmake_files)){
-		return;
-	}
-	auto menu = caja_menu_item_new("cmake-gui", "Open project with cmake-gui", "Open project with cmake-gui", nullptr);
-	caja_menu_append_item(menu_root, menu);
-	g_signal_connect_object (menu, "activate",
-							 G_CALLBACK (cmake_callback),
-							 file_info, static_cast<GConnectFlags>(0));
-}
 
 const std::vector<std::string> qt_files = {"CMakeLists.txt", "*.pro"};
-inline void create_qt_menu(CajaMenu *menu_root, CajaFileInfo *file_info){
-	if(!caja_file_info_is_directory(file_info)){
-		gchar_handle n (caja_file_info_get_name(file_info));
-		std::string name =  (n == nullptr) ? "" : n.get();
-		auto res = std::find_if(qt_files.begin(), qt_files.end(),
-								[&name](const std::string& f){
-			return fnmatch(name.c_str(), f.c_str(), 0) == 0;
-		});
-		if(res == qt_files.end()){
-			return;
-		}
-	}
-	auto path = get_path(file_info);
-	if(!dir_contains(path, cmake_files)){
-		return;
-	}
-	auto menu = caja_menu_item_new("cmake-gui", "Open project with cmake-gui", "Open project with cmake-gui", nullptr);
-	caja_menu_append_item(menu_root, menu);
-	g_signal_connect_object (menu, "activate",
-							 G_CALLBACK (cmake_callback),
-							 file_info, static_cast<GConnectFlags>(0));
-}
 
 inline bool is_qt_project_(CajaFileInfo *file_info){
 	if(!caja_file_info_is_directory(file_info)){

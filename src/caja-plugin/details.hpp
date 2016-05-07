@@ -88,7 +88,6 @@ namespace details{
 		explicit command_and_menu(const std::string& cmake_command_, const std::function<bool(CajaFileInfo *)>& func_ ) :
 			cmake_command(cmake_command_), check_if_add(func_){}
 	};
-	std::vector<CajaMenuItem*> create_cmake_menu_items(CajaFileInfo& file_info, const std::vector<command_and_menu>& cmake_parsers);
 
 	struct command_to_execute{
 		std::string program;
