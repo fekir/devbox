@@ -36,7 +36,7 @@
 // global instancens: beware, there are some other static variables
 extern char **environ;
 
-std::vector<details::command_and_menu> cmake_parsers;
+std::vector<details::command_and_menu> parsers;
 
 namespace details{
 
@@ -95,8 +95,8 @@ namespace details{
 
 
 		// add cmake parser, there should be a check for getting list of installed programs...
-		cmake_parsers.emplace_back("/usr/bin/cmake-gui", is_cmake_project_);
-		cmake_parsers.emplace_back("/usr/bin/qtcreator", is_qt_project_);
+		parsers.emplace_back("/usr/bin/cmake-gui", is_cmake_project_);
+		parsers.emplace_back("/usr/bin/qtcreator", is_qt_project_);
 
 	}
 
@@ -136,7 +136,7 @@ namespace details{
 		caja_menu_item_set_submenu(menu_item_root, menu_root);
 
 		//commands_to_execute.clear();
-		if(create_menu_items(*menu_root, *file, cmake_parsers)==0){
+		if(create_menu_items(*menu_root, *file, parsers)==0){
 			return nullptr;
 		}
 		to_return = g_list_append (to_return, menu_item_root);
@@ -155,7 +155,7 @@ namespace details{
 		auto menu_root = caja_menu_new();
 		caja_menu_item_set_submenu(menu_item_root, menu_root);
 
-		if(create_menu_items(*menu_root, *current_folder, cmake_parsers)==0){
+		if(create_menu_items(*menu_root, *current_folder, parsers)==0){
 			return nullptr;
 		}
 		to_return = g_list_append (to_return, menu_item_root);
@@ -165,7 +165,6 @@ namespace details{
 	void menu_callback (CajaMenuItem *item, CajaFileInfo *file) {
 		(void)item;
 		(void)file;
-
 
 		GtkWidget *dialog = gtk_message_dialog_new_with_markup (
 					nullptr, static_cast<GtkDialogFlags>(0),
