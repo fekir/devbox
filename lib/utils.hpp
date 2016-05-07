@@ -154,6 +154,7 @@ inline std::vector<std::string> is_qt_project_(CajaFileInfo *file_info){
 	if(dir_contains(path, qt_files)){
 		to_return.push_back(path);
 	}
+	return to_return;
 }
 
 inline std::string is_qt_project(const std::vector<std::string>& files){

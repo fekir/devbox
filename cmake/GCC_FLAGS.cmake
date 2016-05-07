@@ -32,7 +32,7 @@ add_compile_options(-Wlogical-op)
 add_compile_options(-Wdisabled-optimization)
 # errors
 add_compile_options(-Werror=format-security)
-
+add_compile_options(-Werror=return-type)
 add_compile_options(-Wno-missing-field-initializers)
 
 
