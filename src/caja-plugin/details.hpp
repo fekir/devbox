@@ -82,8 +82,8 @@ namespace details{
 		std::string menu_label;    // label of menu, if empty will take title
 		std::string menu_tip;      // label of menu, if empty will take "open with $menu_title"
 		std::string menu_icon;     // icon of menu, if empty none is shown
-		std::function<std::vector<std::string>(CajaFileInfo *)> check_if_add;
-		explicit command_and_menu(const std::string& program_, const std::function<std::vector<std::string>(CajaFileInfo *)>& func_ ) :
+		std::function<std::vector<std::string>(const std::vector<CajaFileInfo*>&)> check_if_add;
+		explicit command_and_menu(const std::string& program_, const std::function<std::vector<std::string>(const std::vector<CajaFileInfo*>&)>& func_ ) :
 			program(program_), check_if_add(func_){}
 	};
 
@@ -101,7 +101,7 @@ namespace details{
 		return toreturn;
 	}
 
-	std::size_t create_menu_items(CajaMenu& menu_root, CajaFileInfo& file_info, std::vector<command_and_menu>& parsers);
+	std::size_t create_menu_items(CajaMenu& menu_root, const std::vector<CajaFileInfo*>& file_infos, const std::vector<command_and_menu>& parsers);
 
 	// cmake and qt can safely use it
 	void generic_gui_callback(CajaMenuItem* item, gpointer file_);

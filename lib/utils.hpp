@@ -24,6 +24,7 @@
 // local
 #include "posix_memory.hpp"
 #include "glib_memory.hpp"
+#include "glib_iterator.hpp"
 
 // caja
 #include <libcaja-extension/caja-file-info.h>
@@ -97,7 +98,11 @@ inline bool dir_contains(const std::string& directory, const std::vector<std::st
 
 
 const std::vector<std::string> cmake_files = {"CMakeLists.txt", "CMakeFiles", "CMakeCache.txt"};
-inline std::vector<std::string> is_cmake_project_(CajaFileInfo *file_info){
+inline std::vector<std::string> is_cmake_project_(const std::vector<CajaFileInfo*> file_infos){
+	if(file_infos.size() != 1){
+		return {};
+	}
+	auto file_info = file_infos.at(0);
 	std::vector<std::string> to_return;
 	if(!caja_file_info_is_directory(file_info)){
 		gchar_handle n (caja_file_info_get_name(file_info));
@@ -139,7 +144,11 @@ inline void jpegoptim_callback(CajaMenuItem* item, gpointer file_){
 
 const std::vector<std::string> qt_files = {"CMakeLists.txt", "*.pro"};
 
-inline std::vector<std::string> is_qt_project_(CajaFileInfo *file_info){
+inline std::vector<std::string> is_qt_project_(const std::vector<CajaFileInfo*>& file_infos){
+	if(file_infos.size() != 1){
+		return {};
+	}
+	auto file_info = file_infos.at(0);
 	std::vector<std::string> to_return;
 	if(!caja_file_info_is_directory(file_info)){
 		gchar_handle n (caja_file_info_get_name(file_info));

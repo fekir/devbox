@@ -115,28 +115,24 @@ namespace details{
 		menu_provider_iface->get_background_items = details::get_background_items;
 	}
 
-	GList* get_file_items(CajaMenuProvider *provider, GtkWidget *window, GList *files) {
+	GList* get_file_items(CajaMenuProvider *provider, GtkWidget *window, GList *files_) {
 		(void)provider;
 		(void)window;
 		// Notice: if files==nullptr, it does not mean that someone clicked on the background
 		// (see get_background_items function for that use case)
-		if(compare_size(files, 1)!=0){
-			return nullptr;
-		}
-
-		auto file = reinterpret_cast<CajaFileInfo*>(files->data);
-		if(file==nullptr){
+		if(empty(files_)){
 			return nullptr;
 		}
 
 		GList* to_return = nullptr;
 
+		auto files = to_vector<CajaFileInfo>(files_);
+
 		CajaMenuItem* menu_item_root = caja_menu_item_new("CajaDevelopment::Development", "Development", "Development submenu", "");
 		auto menu_root = caja_menu_new();
 		caja_menu_item_set_submenu(menu_item_root, menu_root);
 
-		//commands_to_execute.clear();
-		if(create_menu_items(*menu_root, *file, parsers)==0){
+		if(create_menu_items(*menu_root, files, parsers)==0){
 			return nullptr;
 		}
 		to_return = g_list_append (to_return, menu_item_root);
@@ -155,7 +151,8 @@ namespace details{
 		auto menu_root = caja_menu_new();
 		caja_menu_item_set_submenu(menu_item_root, menu_root);
 
-		if(create_menu_items(*menu_root, *current_folder, parsers)==0){
+		std::vector<CajaFileInfo*> vec = {current_folder};
+		if(create_menu_items(*menu_root, vec, parsers)==0){
 			return nullptr;
 		}
 		to_return = g_list_append (to_return, menu_item_root);
@@ -196,11 +193,10 @@ namespace details{
 		delete data; // allocated with new
 	}
 
-	std::size_t create_menu_items(CajaMenu& menu_root, CajaFileInfo& file_info, std::vector<command_and_menu>& parsers){
+	std::size_t create_menu_items(CajaMenu& menu_root, const std::vector<CajaFileInfo*>& file_infos, const std::vector<command_and_menu>& parsers){
 		std::size_t to_return = 0;
-
 		for(auto& v : parsers){
-			std::vector<std::string> add_el = (v.check_if_add == nullptr) ? std::vector<std::string>() : v.check_if_add(&file_info);
+			std::vector<std::string> add_el = (v.check_if_add == nullptr) ? std::vector<std::string>() : v.check_if_add(file_infos);
 			if(add_el.empty()){
 				continue;
 			}
