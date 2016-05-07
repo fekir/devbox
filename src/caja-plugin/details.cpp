@@ -176,19 +176,6 @@ namespace details{
 		gtk_widget_destroy (dialog); // FIXME: put in destructor
 	}
 
-	void menu_callback_cmake (CajaMenuItem *item, CajaFileInfo *file){
-		const auto prog = reinterpret_cast<const char*>(g_object_get_data(G_OBJECT (item), "fekir::command"));
-		assert(prog != nullptr);
-		std::string program = prog;
-		std::string param = get_path(file);
-		char* const args[] = {&program[0], &param[0],  nullptr};
-		//char* const env[] = {&display[0], nullptr};
-		const pid_t child_pid = fork();
-		if (child_pid == 0) {  // in child
-			execve(args[0], args, environ); // check != -1
-		}
-	}
-
 	void generic_gui_callback(CajaMenuItem* item, gpointer file_){
 		(void)item;
 		const auto ptr = reinterpret_cast<command_to_execute*>(file_);

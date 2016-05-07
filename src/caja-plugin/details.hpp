@@ -73,8 +73,6 @@ namespace details{
 	/// Registered callback function when user clicks on menu item
 	void menu_callback (CajaMenuItem *item, CajaFileInfo *file);
 
-	void menu_callback_cmake(CajaMenuItem *item, CajaFileInfo *file);
-
 	/// Structure currently used for storing information about the menu item, and information throug the program to launch
 	/// The callback function is used to determine if given a certain file, the menu entry should appear,
 	/// For example the option with cmake-gui should appear only if a cmake file is present.
