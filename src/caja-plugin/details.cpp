@@ -96,7 +96,7 @@ namespace details{
 
 		// add cmake parser, there should be a check for getting list of installed programs...
 		cmake_parsers.emplace_back("/usr/bin/cmake-gui", is_cmake_project_);
-		cmake_parsers.emplace_back("/usr/bin/qtcreator", is_cmake_project_);
+		cmake_parsers.emplace_back("/usr/bin/qtcreator", is_qt_project_);
 
 	}
 
@@ -201,24 +201,24 @@ namespace details{
 		std::size_t to_return = 0;
 
 		for(auto& v : parsers){
-			bool add_el = (v.check_if_add == nullptr) ? true : v.check_if_add(&file_info);
-			if(!add_el){
+			std::vector<std::string> add_el = (v.check_if_add == nullptr) ? std::vector<std::string>() : v.check_if_add(&file_info);
+			if(add_el.empty()){
 				continue;
 			}
 			const std::string program = !v.menu_title.empty() ? v.menu_title :
-																get_name(v.cmake_command); // fixme, only command, no path
-			const std::string title = "fekir::" + program;
+																get_name(v.program); // fixme, only command, no path
+			const std::string title = "devbox::" + program;
 			const std::string label = !v.menu_label.empty() ? v.menu_label :
-															  "Open file with " + program;
+															  "Open with " + program;
 			const std::string tip = !v.menu_tip.empty() ? v.menu_tip :
-														  "Open file with " + program;\
+														  "Open with " + program;\
 			CajaMenuItem* menu = caja_menu_item_new
 					(title.c_str(), label.c_str(), tip.c_str(), v.menu_icon.c_str());
 
 			// these info needs to be generated from command_and_menu -- currently works for cmake and qtcreator
 			command_to_execute* toadd2 = new command_to_execute;
-			toadd2->arguments.push_back(get_path(&file_info));
-			toadd2->program = v.cmake_command;
+			toadd2->arguments = add_el;
+			toadd2->program = v.program;
 
 			g_signal_connect_data(menu, "activate",
 								  G_CALLBACK (details::generic_gui_callback),

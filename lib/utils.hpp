@@ -97,15 +97,22 @@ inline bool dir_contains(const std::string& directory, const std::vector<std::st
 
 
 const std::vector<std::string> cmake_files = {"CMakeLists.txt", "CMakeFiles", "CMakeCache.txt"};
-inline bool is_cmake_project_(CajaFileInfo *file_info){
+inline std::vector<std::string> is_cmake_project_(CajaFileInfo *file_info){
+	std::vector<std::string> to_return;
 	if(!caja_file_info_is_directory(file_info)){
 		gchar_handle n (caja_file_info_get_name(file_info));
 		std::string name =  (n == nullptr) ? "" : n.get();
-		return std::find(cmake_files.begin(), cmake_files.end(), name) != cmake_files.end();
+		if(std::find(cmake_files.begin(), cmake_files.end(), name) != cmake_files.end()){
+			to_return.push_back(get_path(file_info));
+		}
+		return to_return;
 	}
 
 	auto path = get_path(file_info);
-	return dir_contains(path, cmake_files);
+	if(dir_contains(path, cmake_files)){
+		to_return.push_back(path);
+	}
+	return to_return;
 }
 
 
@@ -132,15 +139,21 @@ inline void jpegoptim_callback(CajaMenuItem* item, gpointer file_){
 
 const std::vector<std::string> qt_files = {"CMakeLists.txt", "*.pro"};
 
-inline bool is_qt_project_(CajaFileInfo *file_info){
+inline std::vector<std::string> is_qt_project_(CajaFileInfo *file_info){
+	std::vector<std::string> to_return;
 	if(!caja_file_info_is_directory(file_info)){
 		gchar_handle n (caja_file_info_get_name(file_info));
 		std::string name =  (n == nullptr) ? "" : n.get();
-		return std::find(qt_files.begin(), qt_files.end(), name) != qt_files.end();
+		if(std::find(cmake_files.begin(), cmake_files.end(), name) != cmake_files.end()){
+			to_return.push_back(get_path(file_info));
+		}
+		return to_return;
 	}
 
 	auto path = get_path(file_info);
-	return dir_contains(path, qt_files);
+	if(dir_contains(path, qt_files)){
+		to_return.push_back(path);
+	}
 }
 
 inline std::string is_qt_project(const std::vector<std::string>& files){

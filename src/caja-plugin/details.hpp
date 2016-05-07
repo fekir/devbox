@@ -77,14 +77,14 @@ namespace details{
 	/// The callback function is used to determine if given a certain file, the menu entry should appear,
 	/// For example the option with cmake-gui should appear only if a cmake file is present.
 	struct command_and_menu{
-		std::string cmake_command; // cmake command, inclusive of path
-		std::string menu_title;    // title of menu, if empty will take cmake command, exclusive of path
+		std::string program;       // program name, inclusive of path
+		std::string menu_title;    // title of menu, if empty will take program name, exclusive of path
 		std::string menu_label;    // label of menu, if empty will take title
-		std::string menu_tip;      // label of menu, if empty will take "open cmake project with $menu_title"
+		std::string menu_tip;      // label of menu, if empty will take "open with $menu_title"
 		std::string menu_icon;     // icon of menu, if empty none is shown
-		std::function<bool(CajaFileInfo *)> check_if_add;
-		explicit command_and_menu(const std::string& cmake_command_, const std::function<bool(CajaFileInfo *)>& func_ ) :
-			cmake_command(cmake_command_), check_if_add(func_){}
+		std::function<std::vector<std::string>(CajaFileInfo *)> check_if_add;
+		explicit command_and_menu(const std::string& program_, const std::function<std::vector<std::string>(CajaFileInfo *)>& func_ ) :
+			program(program_), check_if_add(func_){}
 	};
 
 	struct command_to_execute{
