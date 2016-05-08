@@ -41,13 +41,6 @@ TEST_CASE("filematcher", ""){
 	REQUIRE(fnmatch("hello.txt", "hello.txt",0) == 0);
 }
 
-
-/// FIXME: may hae security issue even if using execv afterwards
-std::string create_command_for_console(const std::string& program_and_param){
-	std::string separator(80, '#');
-	return "/bin/bash -ic 'echo executing \"" + program_and_param + "\";\n" +program_and_param +";echo finished execution; exec /bin/bash -i'";
-}
-
 TEST_CASE("consoleprogram", "[.]"){
 	std::string console = "/usr/bin/mate-terminal";
 	std::string program_and_params = "/bin/ls -la";

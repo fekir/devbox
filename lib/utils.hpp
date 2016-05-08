@@ -40,6 +40,7 @@
 #include <string>
 #include <fstream>
 #include <algorithm>
+#include <functional>
 
 /// return current path if a directory, path to file if file, also handles x-caja-desktop
 /// on failure (smb:///, sftp, ...) returns empty string
@@ -189,24 +190,25 @@ inline bool is_jpeg(CajaFileInfo* file_info){
 	return myme_type.get() == std::string("image/jpeg");
 }
 
-inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*> file_infos){
-	if(file_infos.empty()){
+inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*> file_infos_){
+	if(file_infos_.empty()){
 		return {};
 	}
-	if(!std::all_of(file_infos.begin(), file_infos.end(), is_jpeg)){
-		return {};
-	}
+	std::vector<CajaFileInfo*> file_infos(file_infos_);
+	file_infos.erase(
+				std::remove_if(file_infos.begin(), file_infos.end(), [](CajaFileInfo* f){return !is_jpeg(f);}),
+				file_infos.end());
 
-	// jpegoptim is executed as command line --> only 1 param
-	std::vector<std::string> to_return;
+	std::vector<std::string> to_return; to_return.reserve(file_infos.size());
 	for(const auto& f : file_infos){
 		gchar_handle name(caja_file_info_get_name(f));
-		if(name.get() != nullptr){
-			to_return.push_back(name.get());
-		}
+		assert(name.get() != nullptr);
+		to_return.push_back(get_path(f) + "/" + name.get());
+	}
+	if(to_return.size()>2){
+		to_return.insert(to_return.begin(), "-t");
 	}
 	return to_return;
-
 }
 
 inline std::string get_env(const std::string& var){
@@ -214,4 +216,17 @@ inline std::string get_env(const std::string& var){
 	return env == nullptr ? "" : env;
 }
 
+inline std::string create_command_for_console(const std::string& program_and_param){
+	const std::string newline = "\"\n\"";
+	const auto separator = "\"" +std::string(80, '#') + "\n\"";
+
+	std::string command = "/bin/bash -ic 'echo executing \"" + program_and_param + "\";\n";
+	command += "printf " + separator + newline + ";";
+	command += program_and_param + ";";
+	command += "printf " + newline + separator + ";";
+	command += "echo finished execution;";
+	command += "exec /bin/bash -i'";
+	//return "/bin/bash -ic 'echo executing \"" + program_and_param + "\";\n" +program_and_param +";echo finished execution; exec /bin/bash -i'";
+	return command;
+}
 #endif
