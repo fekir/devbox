@@ -180,11 +180,29 @@ inline std::string is_qt_project(const std::vector<std::string>& files){
 	return "";
 }
 
-inline std::string filter_jpg_file(const std::vector<std::string>& files){
-	std::string to_return;
-	for(const auto& file : files){
-		if(fnmatch("*.jpg", file.c_str(), 0)==0){
-			to_return += "\"" + file + "\"";
+
+inline bool is_jpeg(CajaFileInfo* file_info){
+	gchar_handle myme_type(caja_file_info_get_mime_type (file_info));
+	if(myme_type==nullptr){
+		return false;
+	}
+	return myme_type.get() == std::string("image/jpeg");
+}
+
+inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*> file_infos){
+	if(file_infos.empty()){
+		return {};
+	}
+	if(!std::all_of(file_infos.begin(), file_infos.end(), is_jpeg)){
+		return {};
+	}
+
+	// jpegoptim is executed as command line --> only 1 param
+	std::vector<std::string> to_return;
+	for(const auto& f : file_infos){
+		gchar_handle name(caja_file_info_get_name(f));
+		if(name.get() != nullptr){
+			to_return.push_back(name.get());
 		}
 	}
 	return to_return;
@@ -195,4 +213,5 @@ inline std::string get_env(const std::string& var){
 	const char* env = std::getenv(var.c_str());
 	return env == nullptr ? "" : env;
 }
+
 #endif
