@@ -71,14 +71,20 @@ inline std::string get_path(const std::string& file_info){
 	return file_info.substr(0, last_slash + 1);
 }
 
-/// return file in the path
-/// a path is a directory if it ends wit '/' (linux)
+/// return name of file
+/// removes path if present
 inline std::string get_name(std::string file_info){
 	const size_t last_slash = file_info.find_last_of("/");
 	if (std::string::npos != last_slash) {
 		file_info.erase(0, last_slash + 1);
 	}
 	return file_info;
+}
+
+inline std::string get_name(CajaFileInfo* file_info){
+	gchar_handle n (caja_file_info_get_name(file_info));
+	std::string name =  (n == nullptr) ? "" : n.get();
+	return name;
 }
 
 // searches if at least on of the asked file is present
@@ -106,8 +112,7 @@ inline std::vector<std::string> is_cmake_project_(const std::vector<CajaFileInfo
 	auto file_info = file_infos.at(0);
 	std::vector<std::string> to_return;
 	if(!caja_file_info_is_directory(file_info)){
-		gchar_handle n (caja_file_info_get_name(file_info));
-		std::string name =  (n == nullptr) ? "" : n.get();
+		std::string name = get_name(file_info);
 		if(std::find(cmake_files.begin(), cmake_files.end(), name) != cmake_files.end()){
 			to_return.push_back(get_path(file_info));
 		}
@@ -121,28 +126,6 @@ inline std::vector<std::string> is_cmake_project_(const std::vector<CajaFileInfo
 	return to_return;
 }
 
-
-inline std::string is_cmake_project(const std::vector<std::string>& files){
-	for(const auto& file : files){
-		if(std::find(cmake_files.begin(), cmake_files.end(), file) != cmake_files.end()){
-			return "\"" + get_path(file) + "\"";
-		}
-	}
-	return "";
-}
-
-inline void jpegoptim_callback(CajaMenuItem* item, gpointer file_){
-	(void)item;
-	auto file = reinterpret_cast<CajaFileInfo*>(file_);
-	std::string program = "/usr/bin/jpegoptim";
-	std::string param = get_path(file);
-	char* const args[] = {&program[0], &param[0],  nullptr};
-	const pid_t child_pid = fork();
-	if (child_pid == 0) {  // in child
-		execve(args[0], args, environ); // check != -1
-	}
-}
-
 const std::vector<std::string> qt_files = {"CMakeLists.txt", "*.pro"};
 
 inline std::vector<std::string> is_qt_project_(const std::vector<CajaFileInfo*>& file_infos){
@@ -152,8 +135,7 @@ inline std::vector<std::string> is_qt_project_(const std::vector<CajaFileInfo*>&
 	auto file_info = file_infos.at(0);
 	std::vector<std::string> to_return;
 	if(!caja_file_info_is_directory(file_info)){
-		gchar_handle n (caja_file_info_get_name(file_info));
-		std::string name =  (n == nullptr) ? "" : n.get();
+		const std::string name = get_name(file_info);
 		if(std::find(cmake_files.begin(), cmake_files.end(), name) != cmake_files.end()){
 			to_return.push_back(get_path(file_info));
 		}
@@ -166,21 +148,6 @@ inline std::vector<std::string> is_qt_project_(const std::vector<CajaFileInfo*>&
 	}
 	return to_return;
 }
-
-inline std::string is_qt_project(const std::vector<std::string>& files){
-	for(const auto& file : qt_files){
-		auto res = std::find_if(files.begin(), files.end(),
-								[&file](const std::string& f){
-			return fnmatch(file.c_str(), f.c_str(), 0) == 0;
-		}
-		);
-		if(res != files.end()){
-			return "\"" + get_path(*res) + "\"";
-		}
-	}
-	return "";
-}
-
 
 inline bool is_jpeg(CajaFileInfo* file_info){
 	gchar_handle myme_type(caja_file_info_get_mime_type (file_info));
@@ -195,17 +162,14 @@ inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*> 
 		return {};
 	}
 	std::vector<CajaFileInfo*> file_infos(file_infos_);
-	file_infos.erase(
-				std::remove_if(file_infos.begin(), file_infos.end(), [](CajaFileInfo* f){return !is_jpeg(f);}),
-				file_infos.end());
+	const auto it = std::remove_if(file_infos.begin(), file_infos.end(), [](CajaFileInfo* f){return !is_jpeg(f);});
+	file_infos.erase(it,file_infos.end());
 
 	std::vector<std::string> to_return; to_return.reserve(file_infos.size());
-	for(const auto& f : file_infos){
-		gchar_handle name(caja_file_info_get_name(f));
-		assert(name.get() != nullptr);
-		to_return.push_back(get_path(f) + "/" + name.get());
+	for(const auto& file_info : file_infos){
+		to_return.push_back(get_path(file_info) + "/" + get_name(file_info));
 	}
-	if(to_return.size()>2){
+	if(to_return.size()>=2){
 		to_return.insert(to_return.begin(), "-t");
 	}
 	return to_return;
@@ -226,7 +190,6 @@ inline std::string create_command_for_console(const std::string& program_and_par
 	command += "printf " + newline + separator + ";";
 	command += "echo finished execution;";
 	command += "exec /bin/bash -i'";
-	//return "/bin/bash -ic 'echo executing \"" + program_and_param + "\";\n" +program_and_param +";echo finished execution; exec /bin/bash -i'";
 	return command;
 }
 #endif
