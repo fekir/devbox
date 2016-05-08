@@ -110,6 +110,25 @@ inline bool dir_contains(const std::string& directory, const std::vector<std::st
 	return false;
 }
 
+inline bool dir_match(const std::string& directory, const std::vector<std::string>& matcher){
+	const DIR_handle dirp(opendir(directory.c_str()));
+	if(dirp== nullptr){
+		return false;
+	}
+	dirent* dp = readdir(dirp.get());
+	while(dp != nullptr){
+		const std::string file(dp->d_name ? dp->d_name : "");
+		const auto it = std::find_if(matcher.begin(), matcher.end(),
+			[&file](const std::string& m){return fnmatch(m.c_str(), file.c_str(), 0) ==0;});
+		if( it != matcher.end()
+		){
+			return true;
+		}
+		dp = readdir(dirp.get());
+	}
+	return false;
+}
+
 
 const std::vector<std::string> cmake_files = {"CMakeLists.txt", "CMakeFiles", "CMakeCache.txt"};
 inline std::vector<std::string> is_cmake_project(const std::vector<CajaFileInfo*> file_infos){
@@ -135,13 +154,13 @@ inline std::vector<std::string> is_cmake_project(const std::vector<CajaFileInfo*
 
 const std::vector<std::string> c_cpp_files = {"*.cpp", "*.hpp", "*.h", "*.c"};
 inline std::vector<std::string> cppcheck_analyze(const std::vector<CajaFileInfo*>& file_infos){
-	auto lambda =[](CajaFileInfo* f){
+	const auto lambda1 =[](CajaFileInfo* f){
 		const auto name = get_name(f);
 		return std::any_of(c_cpp_files.begin(), c_cpp_files.end(), [&name](const std::string& file_type){
 			return fnmatch(file_type.c_str(), name.c_str(), 0) ==0;
 		});
 	};
-	if(!std::any_of(file_infos.begin(), file_infos.end(),lambda)){
+	if(!std::any_of(file_infos.begin(), file_infos.end(),lambda1)){
 		return {};
 	}
 	return { "--enable=all", get_path(file_infos.at(0))};
@@ -164,7 +183,7 @@ inline std::vector<std::string> is_qt_project(const std::vector<CajaFileInfo*>& 
 	}
 
 	auto path = get_path(file_info);
-	if(dir_contains(path, qt_files)){
+	if(dir_match(path, qt_files)){
 		to_return.push_back(path);
 	}
 	return to_return;
