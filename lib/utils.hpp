@@ -87,6 +87,13 @@ inline std::string get_name(CajaFileInfo* file_info){
 	return name;
 }
 
+const std::string mimetype_exec("application/x-executable");
+const std::string mimetype_jpeg("image/jpeg");
+inline std::string get_mimetype(CajaFileInfo* file_info){
+	gchar_handle myme_type(caja_file_info_get_mime_type (file_info));
+	return (myme_type == nullptr) ? "" : myme_type.get();
+}
+
 // searches if at least on of the asked file is present
 inline bool dir_contains(const std::string& directory, const std::vector<std::string>& files){
 	const DIR_handle dirp(opendir(directory.c_str()));
@@ -105,7 +112,7 @@ inline bool dir_contains(const std::string& directory, const std::vector<std::st
 
 
 const std::vector<std::string> cmake_files = {"CMakeLists.txt", "CMakeFiles", "CMakeCache.txt"};
-inline std::vector<std::string> is_cmake_project_(const std::vector<CajaFileInfo*> file_infos){
+inline std::vector<std::string> is_cmake_project(const std::vector<CajaFileInfo*> file_infos){
 	if(file_infos.size() != 1){
 		return {};
 	}
@@ -126,9 +133,23 @@ inline std::vector<std::string> is_cmake_project_(const std::vector<CajaFileInfo
 	return to_return;
 }
 
-const std::vector<std::string> qt_files = {"CMakeLists.txt", "*.pro"};
+const std::vector<std::string> c_cpp_files = {"*.cpp", "*.hpp", "*.h", "*.c"};
+inline std::vector<std::string> cppcheck_analyze(const std::vector<CajaFileInfo*>& file_infos){
+	auto lambda =[](CajaFileInfo* f){
+		const auto name = get_name(f);
+		return std::any_of(c_cpp_files.begin(), c_cpp_files.end(), [&name](const std::string& file_type){
+			return fnmatch(file_type.c_str(), name.c_str(), 0) ==0;
+		});
+	};
+	if(!std::any_of(file_infos.begin(), file_infos.end(),lambda)){
+		return {};
+	}
+	return { "--enable=all", get_path(file_infos.at(0))};
+}
 
-inline std::vector<std::string> is_qt_project_(const std::vector<CajaFileInfo*>& file_infos){
+
+const std::vector<std::string> qt_files = {"CMakeLists.txt", "*.pro"};
+inline std::vector<std::string> is_qt_project(const std::vector<CajaFileInfo*>& file_infos){
 	if(file_infos.size() != 1){
 		return {};
 	}
@@ -149,20 +170,12 @@ inline std::vector<std::string> is_qt_project_(const std::vector<CajaFileInfo*>&
 	return to_return;
 }
 
-inline bool is_jpeg(CajaFileInfo* file_info){
-	gchar_handle myme_type(caja_file_info_get_mime_type (file_info));
-	if(myme_type==nullptr){
-		return false;
-	}
-	return myme_type.get() == std::string("image/jpeg");
-}
-
 inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*> file_infos_){
 	if(file_infos_.empty()){
 		return {};
 	}
 	std::vector<CajaFileInfo*> file_infos(file_infos_);
-	const auto it = std::remove_if(file_infos.begin(), file_infos.end(), [](CajaFileInfo* f){return !is_jpeg(f);});
+	const auto it = std::remove_if(file_infos.begin(), file_infos.end(), [](CajaFileInfo* f){return get_mimetype(f)!=mimetype_jpeg;});
 	file_infos.erase(it,file_infos.end());
 
 	std::vector<std::string> to_return; to_return.reserve(file_infos.size());
@@ -173,6 +186,13 @@ inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*> 
 		to_return.insert(to_return.begin(), "-t");
 	}
 	return to_return;
+}
+
+inline std::vector<std::string> use_valgrind(const std::vector<CajaFileInfo*> file_infos){
+	if(file_infos.size() != 1 || get_mimetype(file_infos.at(0)) != mimetype_exec){
+		return{};
+	}
+	return {get_path(file_infos.at(0)) + "/" + get_name(file_infos.at(0))};
 }
 
 inline std::string get_env(const std::string& var){

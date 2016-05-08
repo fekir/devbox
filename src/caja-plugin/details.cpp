@@ -97,9 +97,11 @@ namespace details{
 
 
 		// add cmake parser, there should be a check for getting list of installed programs...
-		parsers.emplace_back("/usr/bin/cmake-gui", is_cmake_project_, false);
-		parsers.emplace_back("/usr/bin/qtcreator", is_qt_project_, false);
+		parsers.emplace_back("/usr/bin/cmake-gui", is_cmake_project, false);
+		parsers.emplace_back("/usr/bin/qtcreator", is_qt_project, false);
 		parsers.emplace_back("/usr/bin/jpegoptim", use_jpeg_optim, true);
+		parsers.emplace_back("/usr/bin/cppcheck", cppcheck_analyze, true);
+		parsers.emplace_back("/usr/bin/valkyrie", use_valgrind, false);
 
 	}
 
