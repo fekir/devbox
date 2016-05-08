@@ -39,6 +39,8 @@
 #include <memory>
 #include <functional>
 
+static std::vector<GType> cm_type; // global
+
 // all implementation details for the caja-menu should be here
 namespace menu{
 	typedef struct {

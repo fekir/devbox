@@ -42,7 +42,6 @@ std::vector<menu::command_and_menu> parsers;
 
 namespace menu{
 
-	std::vector<GType> cm_type; // global
 
 	void list_types (const GType **types, int *num_types){
 		// FIXME: validate parameters, and check that cm_type is not empty(!)
@@ -115,6 +114,7 @@ namespace menu{
 
 	void menu_provider_iface_init (gpointer g_iface, gpointer iface_data){
 		(void)iface_data;
+		// has been registered with CAJA_TYPE_MENU_PROVIDER
 		auto menu_provider_iface = reinterpret_cast<CajaMenuProviderIface*>(g_iface);
 		menu_provider_iface->get_file_items = get_file_items;
 		menu_provider_iface->get_background_items = get_background_items;
