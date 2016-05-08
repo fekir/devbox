@@ -17,8 +17,8 @@
 
 /// Main function used for implementing the interface of the Caja Extension
 
-#ifndef MY_DETAILS_HPP
-#define MY_DETAILS_HPP
+#ifndef MY_MENU_HPP
+#define MY_MENU_HPP
 
 // local
 #include "utils.hpp"
