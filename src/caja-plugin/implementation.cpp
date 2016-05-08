@@ -19,6 +19,7 @@
 
 // local
 #include "menu.hpp"
+#include "propertypage.hpp"
 
 // caja
 #include <libcaja-extension/caja-extension-types.h>
@@ -30,6 +31,7 @@
 // --- extension interface ---
 void caja_module_initialize (GTypeModule *module){
 	menu::context_menu_register_type(module);
+	propertypage::propertypage_register_type(module);
 }
 
 void caja_module_shutdown (){

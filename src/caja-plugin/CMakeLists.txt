@@ -6,6 +6,8 @@ set(SOURCE_FILES
 	implementation.cpp
 	menu.hpp
 	menu.cpp
+	propertypage.hpp
+	propertypage.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED
