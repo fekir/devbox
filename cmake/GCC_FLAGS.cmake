@@ -11,7 +11,7 @@ set_property(CACHE SanValue PROPERTY STRINGS ${SanitizerValues})
 # language
 add_compile_options(-std=c++14)
 # default warnings
-add_compile_options(-Wall -Wextra -pedantic -Wmain -Wunreachable-code -Wunknown-pragmas)
+add_compile_options(-Wall -Wextra -pedantic -Wmain -Wunused -Wunknown-pragmas)
 # multiple declaration, shadowing, undef
 #add_compile_options(-Wshadow)
 add_compile_options(-Wundef -Wredundant-decls)
