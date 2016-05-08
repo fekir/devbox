@@ -18,7 +18,7 @@
 #include "catch.hpp"
 
 // local
-#include "../details.hpp"
+#include "../menu.hpp"
 
 // caja
 #include <libcaja-extension/caja-extension-types.h>

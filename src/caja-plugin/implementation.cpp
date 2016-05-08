@@ -18,7 +18,7 @@
 /// This file contains the implementation of the caja-menu-provider interface
 
 // local
-#include "details.hpp"
+#include "menu.hpp"
 
 // caja
 #include <libcaja-extension/caja-extension-types.h>
@@ -29,12 +29,12 @@
 
 // --- extension interface ---
 void caja_module_initialize (GTypeModule *module){
-	details::context_menu_register_type(module);
+	menu::context_menu_register_type(module);
 }
 
 void caja_module_shutdown (){
 }
 
 void caja_module_list_types (const GType **types, int *num_types){
-	details::list_types(types, num_types);
+	menu::list_types(types, num_types);
 }

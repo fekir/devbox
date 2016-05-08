@@ -40,7 +40,7 @@
 #include <functional>
 
 // all implementation details for the caja-menu should be here
-namespace details{
+namespace menu{
 	typedef struct {
 		GObject parent;
 	} ContextMenu;

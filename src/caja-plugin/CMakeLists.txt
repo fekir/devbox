@@ -4,8 +4,8 @@ project(caja-devbox CXX)
 
 set(SOURCE_FILES
 	implementation.cpp
-	details.hpp
-	details.cpp
+	menu.hpp
+	menu.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED

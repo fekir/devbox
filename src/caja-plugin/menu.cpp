@@ -17,7 +17,7 @@
 
 
 // local
-#include "details.hpp"
+#include "menu.hpp"
 #include "utils.hpp"
 #include "glib_iterator.hpp"
 #include "glib_memory.hpp"
@@ -38,9 +38,9 @@
 // global instancens: beware, there are some other static variables
 extern char **environ;
 
-std::vector<details::command_and_menu> parsers;
+std::vector<menu::command_and_menu> parsers;
 
-namespace details{
+namespace menu{
 
 	std::vector<GType> cm_type; // global
 
@@ -56,28 +56,28 @@ namespace details{
 		static GTypeInfo info = {}; // global
 
 		// if not set plugins get loaded again and again...
-		info.class_size = sizeof (details::ContextMenuClass);
-		static_assert(std::is_pod<details::ContextMenuClass>::value,
+		info.class_size = sizeof (ContextMenuClass);
+		static_assert(std::is_pod<ContextMenuClass>::value,
 					  "needs to be POD since it is allocated and not inited by Caja");
 
 		info.base_init = nullptr;
 		info.base_finalize = nullptr;
 
-		info.class_init = details::context_menu_class_init;
+		info.class_init = context_menu_class_init;
 		info.class_finalize = nullptr;
 		info.class_data = nullptr; // data used for initialisation
 
 		// if not set plugins get loaded again and again...
-		info.instance_size = sizeof (details::ContextMenu);
-		static_assert(std::is_pod<details::ContextMenu>::value,
+		info.instance_size = sizeof (ContextMenu);
+		static_assert(std::is_pod<ContextMenu>::value,
 					  "needs to be POD since it is allocated and not inited by Caja");
 		info.n_preallocs = 0;
-		info.instance_init = details::context_menu_init;
+		info.instance_init = context_menu_init;
 
 		info.value_table = nullptr;
 
 		static GInterfaceInfo menu_provider_iface_info = {}; // global
-		menu_provider_iface_info.interface_init = details::menu_provider_iface_init;
+		menu_provider_iface_info.interface_init = menu_provider_iface_init;
 		menu_provider_iface_info.interface_finalize = nullptr;
 		menu_provider_iface_info.interface_data = nullptr;
 
@@ -116,8 +116,8 @@ namespace details{
 	void menu_provider_iface_init (gpointer g_iface, gpointer iface_data){
 		(void)iface_data;
 		auto menu_provider_iface = reinterpret_cast<CajaMenuProviderIface*>(g_iface);
-		menu_provider_iface->get_file_items = details::get_file_items;
-		menu_provider_iface->get_background_items = details::get_background_items;
+		menu_provider_iface->get_file_items = get_file_items;
+		menu_provider_iface->get_background_items = get_background_items;
 	}
 
 	GList* get_file_items(CajaMenuProvider *provider, GtkWidget *window, GList *files_) {
@@ -243,7 +243,7 @@ namespace details{
 			toadd2->program = v.program;
 
 			g_signal_connect_data(menu, "activate",
-								  G_CALLBACK (v.executeinterminal ? details::generic_mateterm_callback : details::generic_gui_callback),
+								  G_CALLBACK (v.executeinterminal ? generic_mateterm_callback : generic_gui_callback),
 								  static_cast<gpointer>(toadd2), &closureNotify, static_cast<GConnectFlags>(0));
 			// static_assert that file is the same type of 2nd param of callback function!
 			caja_menu_append_item(&menu_root, menu);
