@@ -134,10 +134,6 @@ namespace details{
 		auto files = to_vector<CajaFileInfo>(files_);
 		assert(!files.empty() && "if empty, should have returned earlier");
 
-		std::ofstream ofs("/home/df0/caja_ext.txt", std::ios::app);
-		ofs << "mime_type " <<  caja_file_info_get_mime_type (files.at(0)) << std::endl;
-		ofs << "uri" << caja_file_info_get_uri(files.at(0)) << std::endl;
-
 		CajaMenuItem* menu_item_root = caja_menu_item_new("CajaDevelopment::Development", "Development", "Development submenu", "");
 		auto menu_root = caja_menu_new();
 		caja_menu_item_set_submenu(menu_item_root, menu_root);
