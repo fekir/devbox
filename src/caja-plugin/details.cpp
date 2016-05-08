@@ -18,6 +18,7 @@
 
 // local
 #include "details.hpp"
+#include "utils.hpp"
 #include "glib_iterator.hpp"
 #include "glib_memory.hpp"
 
@@ -26,6 +27,7 @@
 
 // cstd
 #include <cstring>
+#include <cassert>
 
 // std
 #include <type_traits>
@@ -90,13 +92,14 @@ namespace details{
 									 CAJA_TYPE_MENU_PROVIDER, // è per questo che ricevo un CajaMenuInterface????
 									 &menu_provider_iface_info);
 
-		// alternative sono CAJA_TYPE_COLUMN_PROVIDER, CAJA_TYPE_INFO_PROVIDER, ...
+		// alternative sono CAJA_TYPE_COLUMN_PROVIDER, CAJA_TYPE_INFO_PROVIDER, CAJA_TYPE_PROPERTY_PAGE_PROVIDER, ...
 		cm_type.push_back(type);
 
 
 		// add cmake parser, there should be a check for getting list of installed programs...
-		parsers.emplace_back("/usr/bin/cmake-gui", is_cmake_project_);
-		parsers.emplace_back("/usr/bin/qtcreator", is_qt_project_);
+		parsers.emplace_back("/usr/bin/cmake-gui", is_cmake_project_, false);
+		parsers.emplace_back("/usr/bin/qtcreator", is_qt_project_, false);
+		parsers.emplace_back("/usr/bin/jpegoptim", use_jpeg_optim, true);
 
 	}
 
@@ -127,6 +130,11 @@ namespace details{
 		GList* to_return = nullptr;
 
 		auto files = to_vector<CajaFileInfo>(files_);
+		assert(!files.empty() && "if empty, should have returned earlier");
+
+		std::ofstream ofs("/home/df0/caja_ext.txt", std::ios::app);
+		ofs << "mime_type " <<  caja_file_info_get_mime_type (files.at(0)) << std::endl;
+		ofs << "uri" << caja_file_info_get_uri(files.at(0)) << std::endl;
 
 		CajaMenuItem* menu_item_root = caja_menu_item_new("CajaDevelopment::Development", "Development", "Development submenu", "");
 		auto menu_root = caja_menu_new();
@@ -172,10 +180,10 @@ namespace details{
 		gtk_widget_destroy (dialog); // FIXME: put in destructor
 	}
 
-	void generic_gui_callback(CajaMenuItem* item, gpointer file_){
+	void generic_gui_callback(CajaMenuItem* item, gpointer ptr){
 		(void)item;
-		const auto ptr = reinterpret_cast<command_to_execute*>(file_);
-		command_to_execute comtoex = *ptr;
+		assert(ptr != nullptr);
+		command_to_execute comtoex = *reinterpret_cast<command_to_execute*>(ptr);
 
 		std::string program = comtoex.program;
 		auto argv = to_argv(comtoex.arguments);
@@ -183,6 +191,27 @@ namespace details{
 		const pid_t child_pid = fork();
 		if (child_pid == 0) {  // in child
 			execve(&program[0], &argv[0], environ); // check != -1
+		}
+	}
+
+	void generic_mateterm_callback(CajaMenuItem* item, gpointer ptr){
+		(void)item;
+		assert(ptr != nullptr);
+		command_to_execute comtoex = *reinterpret_cast<command_to_execute*>(ptr);
+
+		std::string program_and_params = comtoex.program;
+		for(const auto& p : comtoex.arguments){
+			program_and_params += " " + p;
+		}
+		std::string param1 = "-e";
+		//	std::string param2 = "/bin/bash -c 'echo executing "+ program_and_params + ";\n"+program_and_params+";echo finshed; exec /bin/bash '";
+		std::string param2 = create_command_for_console(program_and_params);
+
+		std::string console = "/usr/bin/mate-terminal";
+		char* const args[] = {&console[0], &param1[0], &param2[0], nullptr};
+		const pid_t child_pid = fork();
+		if (child_pid == 0) {  // in child
+			execve(&console[0], args, environ); // check != -1
 		}
 	}
 
@@ -216,7 +245,7 @@ namespace details{
 			toadd2->program = v.program;
 
 			g_signal_connect_data(menu, "activate",
-								  G_CALLBACK (details::generic_gui_callback),
+								  G_CALLBACK (v.executeinterminal ? details::generic_mateterm_callback : details::generic_gui_callback),
 								  static_cast<gpointer>(toadd2), &closureNotify, static_cast<GConnectFlags>(0));
 			// static_assert that file is the same type of 2nd param of callback function!
 			caja_menu_append_item(&menu_root, menu);

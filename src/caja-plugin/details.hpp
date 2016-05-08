@@ -70,21 +70,22 @@ namespace details{
 
 	GList* get_background_items(CajaMenuProvider *provider, GtkWidget *window, CajaFileInfo *current_folder);
 
-	/// Registered callback function when user clicks on menu item
-	void menu_callback (CajaMenuItem *item, CajaFileInfo *file);
+
 
 	/// Structure currently used for storing information about the menu item, and information throug the program to launch
 	/// The callback function is used to determine if given a certain file, the menu entry should appear,
 	/// For example the option with cmake-gui should appear only if a cmake file is present.
+	using check_id_add_func = std::function<std::vector<std::string>(const std::vector<CajaFileInfo*>&)>;
 	struct command_and_menu{
 		std::string program;       // program name, inclusive of path
 		std::string menu_title;    // title of menu, if empty will take program name, exclusive of path
 		std::string menu_label;    // label of menu, if empty will take title
 		std::string menu_tip;      // label of menu, if empty will take "open with $menu_title"
 		std::string menu_icon;     // icon of menu, if empty none is shown
-		std::function<std::vector<std::string>(const std::vector<CajaFileInfo*>&)> check_if_add;
-		explicit command_and_menu(const std::string& program_, const std::function<std::vector<std::string>(const std::vector<CajaFileInfo*>&)>& func_ ) :
-			program(program_), check_if_add(func_){}
+		check_id_add_func check_if_add;
+		bool executeinterminal = true;
+		explicit command_and_menu(const std::string& program_, const check_id_add_func& func_, const bool executeinterminal_ ) :
+			program(program_), check_if_add(func_), executeinterminal(executeinterminal_){}
 	};
 
 	struct command_to_execute{
@@ -103,8 +104,11 @@ namespace details{
 
 	std::size_t create_menu_items(CajaMenu& menu_root, const std::vector<CajaFileInfo*>& file_infos, const std::vector<command_and_menu>& parsers);
 
-	// cmake and qt can safely use it
+
+	/// Registered callback function when user clicks on menu item
+	void menu_callback (CajaMenuItem *item, CajaFileInfo *file);
 	void generic_gui_callback(CajaMenuItem* item, gpointer file_);
+	void generic_mateterm_callback(CajaMenuItem* item, gpointer ptr);
 }
 
 #endif
