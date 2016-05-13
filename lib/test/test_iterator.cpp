@@ -19,6 +19,7 @@
 
 // local
 #include "glib_iterator.hpp"
+#include "glib_memory.hpp"
 
 
 // glib
@@ -42,26 +43,28 @@ TestStruct t3 = {14};
 TestStruct t4 = {15};
 
 
-GList* createlist(){
+GList_handle createlist(){
 	GList* list = g_list_prepend(nullptr, &t4);
 	list = g_list_prepend(list, &t3);
 	list = g_list_prepend(list, &t2);
 	list = g_list_prepend(list, &t1);
-	return list;
+	GList_handle handle(list);
+	return handle;
 }
 
-GSList* createslist(){
+GSList_handle createslist(){
 	GSList* list = g_slist_prepend(nullptr, &t4);
 	list = g_slist_prepend(list, &t3);
 	list = g_slist_prepend(list, &t2);
 	list = g_slist_prepend(list, &t1);
-	return list;
+	GSList_handle handle(list);
+	return handle;
 }
 
 TEST_CASE("GList_empty", "[GList][empty]") {
 	// Create GList
-	GList* list = createlist();
-	REQUIRE(!empty(list));
+	const auto list = createlist();
+	REQUIRE(!empty(list.get()));
 
 	GList* list2 = nullptr;
 	REQUIRE(empty(list2));
@@ -69,8 +72,8 @@ TEST_CASE("GList_empty", "[GList][empty]") {
 
 TEST_CASE("GSList_empty", "[GList][empty]") {
 	// Create GList
-	GSList* list = createslist();
-	REQUIRE(!empty(list));
+	const auto list = createslist();
+	REQUIRE(!empty(list.get()));
 
 	GSList* list2 = nullptr;
 	REQUIRE(empty(list2));
@@ -79,7 +82,8 @@ TEST_CASE("GSList_empty", "[GList][empty]") {
 
 TEST_CASE("GList_size", "[GList][size]") {
 	// Create GList
-	GList* list = createlist();
+	auto list_ = createlist();
+	auto list = list_.get();
 
 	REQUIRE(size(list) == g_list_length(list));
 
@@ -91,14 +95,14 @@ TEST_CASE("GList_size", "[GList][size]") {
 	// since prev = nullptr
 	REQUIRE(size(list->prev) == 0);
 
-	_GList list3 = {};
+	GList list3 = {};
 	REQUIRE(size(&list3) == 1);
 }
 
 TEST_CASE("GList_iter1", "[GList][iterator][forward]") {
 
 	// Create GList
-	GList* list = createlist();
+	auto list = createlist();
 
 	// Assure that I've understood how GList works
 	REQUIRE(list->prev == nullptr);
@@ -108,12 +112,12 @@ TEST_CASE("GList_iter1", "[GList][iterator][forward]") {
 
 	// Test the iterator!
 	size_t counter{};
-	for(auto it = begin(list); it != end(list); ++it){
+	for(auto it = begin(list.get()); it != end(list.get()); ++it){
 		++counter;
 	}
-	REQUIRE(counter == size(list));
+	REQUIRE(counter == size(list.get()));
 
-	for(auto el : list){
+	for(auto el : list.get()){
 		--counter;
 	}
 	REQUIRE(counter == 0);
@@ -121,7 +125,7 @@ TEST_CASE("GList_iter1", "[GList][iterator][forward]") {
 }
 
 TEST_CASE("begin", ""){
-	GList* list = createlist();
+	auto list = createlist();
 	auto el = g_list_first(list->next->next);
 	auto el2 = begin(list->next->next);
 	REQUIRE(el->data == &t1);
@@ -129,10 +133,11 @@ TEST_CASE("begin", ""){
 }
 
 TEST_CASE("count2", ""){
-	GList* list = createlist();
+	const auto list_ = createlist();
+	auto list = list_.get();
 	REQUIRE(compare_size(list, 2) > 0);
 	REQUIRE(compare_size(list, 5) < 0);
-	REQUIRE(compare_size(list, 4) == 0);
+	REQUIRE(compare_size(list, 4) == 0);	
 }
 
 TEST_CASE("count3", ""){
@@ -142,9 +147,9 @@ TEST_CASE("count3", ""){
 }
 
 TEST_CASE("to_vector", ""){
-	GList* list = createlist();
-	std::vector<TestStruct*> vec = to_vector<TestStruct>(list);
-	REQUIRE(vec.size() == size(list));
+	const auto list = createlist();
+	const std::vector<TestStruct*> vec = to_vector<TestStruct>(list.get());
+	REQUIRE(vec.size() == size(list.get()));
 	REQUIRE(vec.at(0) == list->data);
 	REQUIRE(vec.at(1) == list->next->data);
 }

@@ -38,4 +38,19 @@ struct gpointer_deleter{
 using gpointer_handle = std::unique_ptr<gpointer, gpointer_deleter>;
 using gchar_handle    = std::unique_ptr<gchar,    gpointer_deleter>;
 
+
+struct GList_deleter{
+	void operator()(GList* gl) const {
+		g_list_free(gl);
+	}
+};
+using GList_handle = std::unique_ptr<GList, GList_deleter>;
+
+struct GSList_deleter{
+	void operator()(GSList* gl) const {
+		g_slist_free(gl);
+	}
+};
+using GSList_handle = std::unique_ptr<GSList, GSList_deleter>;
+
 #endif
