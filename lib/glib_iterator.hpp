@@ -115,7 +115,7 @@ inline int compare_size(const GList* list, std::size_t to_compare){
 			0;
 }
 
-/// Since calculating the lenght of a GSList is a O(n) operation, where n is the size of the GSList.
+/// Since calculating the lenght of a GSList is a O(n) operation, where n is the size of the GSList,
 /// you should use this function if you want to check the number of elements against a specific number
 /// This function returns > 0 if the list has more elements than asked and <0 if the number of elements is less, 0 if equals.
 /// The complexity is O(min(to_compare, n))
@@ -152,8 +152,8 @@ public:
 	GListForwardIterator(const GListForwardIterator& other) : node(other.node) {}
 	GListForwardIterator& operator=(GListForwardIterator other) { std::swap(node, other.node); return *this; }
 
-	bool operator==(const GListForwardIterator& other) { return node == other.node; }
-	bool operator!=(const GListForwardIterator& other) { return node != other.node; }
+	bool operator==(const GListForwardIterator& other) const { return node == other.node; }
+	bool operator!=(const GListForwardIterator& other) const { return node != other.node; }
 
 	const gpointer& operator*() const { assert(node!=nullptr); return node->data; } // FIXME: add type deduction for return value
 
@@ -179,11 +179,20 @@ inline GListForwardIterator<GList> begin(GList* list){
 	}
 	return GListForwardIterator<GList>(list);
 }
+inline GListForwardIterator<GList> begin(const GList* list){
+	while(list->prev != nullptr){
+		list = list->prev;
+	}
+	return GListForwardIterator<GList>(list);
+}
 
-/// Returns a ForwardIterator to the beginning* of the GLSist
+/// Returns a ForwardIterator to the beginning* of the GSList
 /// (*)Notice that if the input paramter does not point to the first element, the current element will be treated as first
 /// Overload of the std::begin function
 inline GListForwardIterator<GSList> begin(GSList* list){
+	return GListForwardIterator<GSList>(list);
+}
+inline GListForwardIterator<GSList> begin(const GSList* list){
 	return GListForwardIterator<GSList>(list);
 }
 
@@ -195,11 +204,17 @@ inline GListForwardIterator<glist> end(glist* list){
 	(void)list;
 	return GListForwardIterator<glist>(nullptr);
 }
+template<class glist>
+inline GListForwardIterator<glist> end(const glist* list){
+	is_glist_or_sglist(glist);
+	(void)list;
+	return GListForwardIterator<glist>(nullptr);
+}
 
 /// Converts a std::vector<T*> to a GList.
-/// T need to be a POD type (maube this restriction is not necessary)
+/// T need to be a POD type (maybe this restriction is not necessary)
 template<class T>
-GList* to_glist(const std::vector<T*>& vec){
+GList* to_GList(const std::vector<T*>& vec){
 	static_assert(std::is_pod<T>::value , "needs to be POD");
 	GList* toreturn = nullptr;
 	for(const auto& v : vec){
@@ -208,8 +223,11 @@ GList* to_glist(const std::vector<T*>& vec){
 	return toreturn;
 }
 
+/// Converst a GList/GSList to a ype safe std::vector
+/// It performs a unsafe cast, unless you are asking a std::vector<void*>
+/// T needs to be a POD type
 template<class T, class glist>
-std::vector<T*> to_vector(glist* list){
+std::vector<T*> to_vector(const glist* list){
 	is_glist_or_sglist(glist);
 	std::vector<T*> to_return;
 	std::transform(begin(list), end(list), std::back_insert_iterator<std::vector<T*>>(to_return),
