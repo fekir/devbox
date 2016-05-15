@@ -182,7 +182,7 @@ inline std::vector<std::string> is_qt_project(const std::vector<CajaFileInfo*>& 
 		return to_return;
 	}
 
-	auto path = get_path(file_info);
+	const auto path = get_path(file_info);
 	if(dir_match(path, qt_files)){
 		to_return.push_back(path);
 	}
