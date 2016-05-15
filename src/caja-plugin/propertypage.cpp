@@ -22,6 +22,15 @@
 #include "utils.hpp"
 #include "glib_iterator.hpp"
 #include "glib_memory.hpp"
+#include "gtk_memory.hpp"
+#include "openssl_memory.hpp"
+#include "hexdump.hpp"
+
+// posix
+#include <sys/stat.h>
+
+// openssl
+#include <openssl/evp.h>
 
 // glib
 #include <glib.h>
@@ -35,6 +44,9 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <iostream>
+#include <iterator>
+#include <utility>
 
 // global instancens: beware, there are some other static variables
 extern char **environ;
@@ -111,7 +123,96 @@ namespace propertypage{
 		propertypage_iface->get_pages = get_pages;
 	}
 
+	/// returns a widget where GTK_IS_TEXT_VIEW is true
+	/// the widget is not editable and wrap_mode is set on WRAP_CHAR
+	GtkWidget_handle create_ro_wrap_text_view(){
+		GtkWidget_handle text_view(gtk_text_view_new());
+		assert(GTK_IS_TEXT_VIEW(text_view.get()));
+		gtk_text_view_set_editable(GTK_TEXT_VIEW(text_view.get()), FALSE);
+		gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view.get()), GTK_WRAP_CHAR);
+		return text_view;
+	}
 
+	GtkWidget_handle create_hash_sum(CajaFileInfo* file_info){
+		if(caja_file_info_is_directory(file_info)){
+			return nullptr;
+		}
+
+
+		const std::string path_file = get_path(file_info) + "/" + get_name(file_info);
+
+		GtkWidget_handle box_(gtk_vbox_new(FALSE, 5));
+		auto box = box_.get();
+		assert(GTK_IS_CONTAINER(box)); // FIXME: is it possible to static_assert??
+
+		// TODO: if file is big, I should maybe create a task that runs in background and updates the values when ready...
+
+		std::ifstream input( path_file, std::ios::binary );
+		if(!input){
+			gtk_container_add(GTK_CONTAINER(box), gtk_label_new ("Unable to open file for creating hash"));
+			return box_;
+		}
+
+		std::vector<EVP_MD_CTX_HANDLE> evps; // init-list would not work...
+		evps.emplace_back(make_EVP_MD_CTX_HANDLE(EVP_md5()));
+		evps.emplace_back(make_EVP_MD_CTX_HANDLE(EVP_sha1()));
+		evps.emplace_back(make_EVP_MD_CTX_HANDLE(EVP_sha256()));
+		evps.emplace_back(make_EVP_MD_CTX_HANDLE(EVP_sha512()));
+		//std::vector<decltype(evps.size())> invalid_evps;
+
+		// FIXME: do not read all file at once - but as stream...
+		std::array<unsigned char, 2048> buffer;
+		while(!input.eof()){
+			const auto readed = input.read(reinterpret_cast<char*>(&buffer.at(0)), buffer.size()).gcount();
+
+			if(input.fail() && !input.eof()){ // something went wrong, but we where not at the end of the file
+				throw std::runtime_error("error reading stream");
+			}
+
+			for(auto it = evps.begin(); it != evps.end();  ){
+				const auto res_update = EVP_DigestUpdate(it->get(), &buffer.at(0), readed);
+				if(res_update != 1){
+					const std::string hashtype = to_string(EVP_MD_CTX_md(it->get()));
+					std::string error_msg = "Unable to create hash of type " + hashtype + ".";
+					gtk_container_add(GTK_CONTAINER(box), gtk_label_new (error_msg.c_str()));
+					it = evps.erase(it);
+				} else {
+					++it;
+				}
+			}
+		}
+
+		// finished processing file -> call finalize and get the value
+
+		for(auto it = evps.begin(); it != evps.end();  ){
+			const std::string hashtype = to_string(EVP_MD_CTX_md(it->get()));
+
+			const int size_ = EVP_MD_CTX_size(it->get());
+			std::vector<unsigned char> md_value(std::max(size_, 0));
+			unsigned int md_len = static_cast<unsigned int>(md_value.size());
+			const auto res_final = EVP_DigestFinal_ex(it->get(), &md_value.at(0), &md_len);
+			if(res_final != 1){
+				std::string error_msg = "Unable to create hash of type " + hashtype + ".";
+				gtk_container_add(GTK_CONTAINER(box), gtk_label_new (error_msg.c_str()));
+				it = evps.erase(it);
+				continue;
+			}
+			md_value.resize(md_len);
+			const auto dump = hexdump::dump(md_value.begin(), md_value.end());
+
+			// add dump and description to container
+			std::string description = hashtype + ":";
+			gtk_container_add(GTK_CONTAINER(box), gtk_label_new(description.c_str()));
+			auto text_view = create_ro_wrap_text_view();
+			auto buffer_ = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view.get()));
+			gtk_text_buffer_set_text(buffer_, dump.str().c_str(), static_cast<int>(dump.str().size()));
+			gtk_container_add(GTK_CONTAINER(box), text_view.release());
+			++it;
+		}
+		return box_;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	GList* get_pages(CajaPropertyPageProvider *provider, GList *files){
 		(void)provider;
 
@@ -119,14 +220,21 @@ namespace propertypage{
 			return nullptr;
 		}
 
-		GtkWidget* properties = gtk_label_new ("Hello World!");
-		gtk_widget_show(properties);
+		const auto file_info = reinterpret_cast<CajaFileInfo*>(files->data);
 
-		CajaPropertyPage* page = caja_property_page_new ("devbox::property_page",
-									   gtk_label_new ("DevBox"),
-									   properties);
 		GList* pages = nullptr;
-		pages = g_list_append (pages, page);
+		auto hashes = create_hash_sum(file_info);
+		if(hashes!=nullptr){
+			GtkWidget_handle box(gtk_vbox_new(FALSE, 1));
+			assert(GTK_IS_CONTAINER(box.get())); // FIXME: is it possible to static_assert??
+			gtk_container_add(GTK_CONTAINER(box.get()), hashes.release());
+			gtk_widget_show_all(box.get());
+
+			CajaPropertyPage* page = caja_property_page_new ("devbox::property_page",
+															 gtk_label_new ("Checksum"),
+															 box.release());
+			pages = g_list_append (pages, page);
+		}
 		return pages;
 	}
 

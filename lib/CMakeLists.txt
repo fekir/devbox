@@ -7,8 +7,12 @@ set(SOURCE_FILES
 	utils.hpp
 	glib_iterator.hpp
 	glib_memory.hpp
+	gtk_memory.hpp
 	posix_memory.hpp
+	openssl_memory.hpp
 	utils.cpp
+	hexdump.cpp
+	hexdump.hpp
 )
 
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
@@ -24,6 +28,8 @@ set_target_properties(${PROJECT_NAME}
 set(TEST_FILES
 	test/test_utils.cpp
 	test/test_iterator.cpp
+	test/test_hash.cpp
+	test/test_hexdump.cpp
 )
 
 source_group("Test Files" FILES ${TEST_FILES})
@@ -31,6 +37,7 @@ source_group("Test Files" FILES ${TEST_FILES})
 add_definitions( -DTEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test/data/" )
 set(PROJECT_NAME_TEST "${PROJECT_NAME}Test")
 add_executable(${PROJECT_NAME_TEST} test/main.cpp ${SOURCE_FILES} ${TEST_FILES})
+target_link_libraries(${PROJECT_NAME_TEST} ${OPENSSL_LIBRARIES})
 
 set_property(TARGET ${PROJECT_NAME_TEST} PROPERTY CXX_STANDARD 11)
 

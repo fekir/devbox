@@ -48,6 +48,11 @@ my_check_modules(CAJA REQUIRED libcaja-extension)
 include_directories(${CAJA_INCLUDE_DIRS})
 #message(${CAJA_INCLUDE_DIRS})
 
+
+#find_package(CryptoPP REQUIRED)
+find_package(OpenSSL REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIR})
+
 set(APP_NAME "DevBox")
 
 include_directories(lib)
