@@ -12,7 +12,7 @@ set(SOURCE_FILES
 
 #set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 #set(CMAKE_C_VISIBILITY_PRESET hidden)
-set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+#set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 add_library(${PROJECT_NAME} SHARED
 	${SOURCE_FILES}
 )
@@ -29,6 +29,25 @@ install(
 	TARGETS ${PROJECT_NAME}
 	LIBRARY DESTINATION "/usr/lib/x86_64-linux-gnu/caja/extensions-2.0/"
 )
+
+set(CPACK_GENERATOR "DEB")
+set(CPACK_STRIP_FILES TRUE)
+set(CPACK_PACKAGE_CONTACT "federico.kircheis@gmail.com")
+set(CPACK_PACKAGE_NAME "caja-devbox")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "caja plugin for developers")
+set(CPACK_PACKAGE_DESCRIPTION "This package contains a caja plugin for developers")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.md")
+SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README.md")
+
+message("${CMAKE_SOURCE_DIR}")
+
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Federico Kircheis <federico.kircheis@gmail.com>")
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/fekir/devbox")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "openssl (>= 1.0.2h), libc6")
+#set(CPACK_DEBIAN_CHANGELOG_FILE "...") # create from github log??
+include(CPack)
+
+## Test ##
 
 set(TEST_FILES
 	test/test_interface.cpp
