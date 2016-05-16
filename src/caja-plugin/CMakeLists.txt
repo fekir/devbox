@@ -39,8 +39,6 @@ set(CPACK_PACKAGE_DESCRIPTION "This package contains a caja plugin for developer
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.md")
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README.md")
 
-message("${CMAKE_SOURCE_DIR}")
-
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Federico Kircheis <federico.kircheis@gmail.com>")
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/fekir/devbox")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "openssl (>= 1.0.2h), libc6")
