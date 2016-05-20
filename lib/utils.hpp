@@ -41,6 +41,59 @@
 #include <fstream>
 #include <algorithm>
 #include <functional>
+#include <iterator>
+
+
+// array with common spaces, used by trim functions. A lot of UTF characters are missing.
+constexpr char char_to_trim[] = { ' ', '\0', '\t', '\n', '\r', '\v', '\f'};
+
+template < class T, size_t N >
+constexpr size_t array_size( const T (&)[N] ) noexcept{return N;}
+
+
+inline std::string rtrim(const std::string& s){
+	const auto last = s.find_last_not_of(char_to_trim, std::string::npos, array_size(char_to_trim));
+	return s.substr(0, last);
+}
+
+inline std::string ltrim(const std::string& s){
+	const auto first = s.find_first_not_of(char_to_trim, 0, array_size(char_to_trim));
+	return s.substr(first);
+}
+
+inline std::string trim(const std::string& s){
+	// not calling ltrim and rtrim for avoiding one reallocation
+	const auto last = s.find_last_not_of(char_to_trim, std::string::npos, array_size(char_to_trim));
+	const auto first = s.find_first_not_of(char_to_trim, 0, array_size(char_to_trim));
+	return s.substr(first, last-first+1);
+}
+
+
+/// reads a whole line inside a std::string
+inline bool mygetline(std::string& l, FILE* fp){
+	if(!feof(fp)){
+		l={};
+		return false;
+	}
+	std::string buffer;
+	while(!feof(fp)) {
+		std::string tmp(256, '\0');
+		if(fgets(&tmp[0], static_cast<int>(tmp.size()), fp) != nullptr){
+			const auto len = std::strlen(tmp.c_str());
+			if ((len > 0) && (tmp.at(len-1) == '\n')){ // read untile end of line (what if line ends with '\r'?
+				buffer += std::string(tmp.c_str(), len -2);
+				l = buffer;
+				return true;
+			} else if(len > 0) { // but no terminating line
+				buffer += std::string(tmp.c_str(), len);
+			}
+		}
+	}
+	// FIXME: add error checking
+	// finished reading file, no eol, but eof --> ok
+	l = buffer;
+	return true;
+}
 
 /// return current path if a directory, path to file if file, also handles x-caja-desktop
 /// on failure (smb:///, sftp, ...) returns empty string
@@ -88,7 +141,9 @@ inline std::string get_name(CajaFileInfo* file_info){
 }
 
 const std::string mimetype_exec("application/x-executable");
+const std::string mimetype_sharedlib("application/x-sharedlib");
 const std::string mimetype_jpeg("image/jpeg");
+
 inline std::string get_mimetype(CajaFileInfo* file_info){
 	gchar_handle myme_type(caja_file_info_get_mime_type (file_info));
 	return (myme_type == nullptr) ? "" : myme_type.get();
@@ -119,9 +174,9 @@ inline bool dir_match(const std::string& directory, const std::vector<std::strin
 	while(dp != nullptr){
 		const std::string file(dp->d_name ? dp->d_name : "");
 		const auto it = std::find_if(matcher.begin(), matcher.end(),
-			[&file](const std::string& m){return fnmatch(m.c_str(), file.c_str(), 0) ==0;});
-		if( it != matcher.end()
-		){
+									 [&file](const std::string& m){return fnmatch(m.c_str(), file.c_str(), 0) == 0;}
+		);
+		if( it != matcher.end()){
 			return true;
 		}
 		dp = readdir(dirp.get());
@@ -194,7 +249,9 @@ inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*> 
 		return {};
 	}
 	std::vector<CajaFileInfo*> file_infos(file_infos_);
-	const auto it = std::remove_if(file_infos.begin(), file_infos.end(), [](CajaFileInfo* f){return get_mimetype(f)!=mimetype_jpeg;});
+	const auto it = std::remove_if(file_infos.begin(), file_infos.end(),
+								   [](CajaFileInfo* f){return get_mimetype(f)!=mimetype_jpeg;}
+			);
 	file_infos.erase(it,file_infos.end());
 
 	std::vector<std::string> to_return; to_return.reserve(file_infos.size());
