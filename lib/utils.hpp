@@ -41,6 +41,7 @@
 #include <fstream>
 #include <algorithm>
 #include <functional>
+#include <algorithm>
 #include <iterator>
 
 
@@ -71,28 +72,31 @@ inline std::string trim(const std::string& s){
 
 /// reads a whole line inside a std::string
 inline bool mygetline(std::string& l, FILE* fp){
-	if(!feof(fp)){
+	if(feof(fp)){
 		l={};
 		return false;
 	}
 	std::string buffer;
+
 	while(!feof(fp)) {
 		std::string tmp(256, '\0');
 		if(fgets(&tmp[0], static_cast<int>(tmp.size()), fp) != nullptr){
+			// fgets does not return lenght, this will not work if tmp contains embedded '\0'
 			const auto len = std::strlen(tmp.c_str());
 			if ((len > 0) && (tmp.at(len-1) == '\n')){ // read untile end of line (what if line ends with '\r'?
-				buffer += std::string(tmp.c_str(), len -2);
+				// remove '\0' and eol, avoid underflow with max
+				buffer += std::string(tmp, 0, std::max(len,decltype(len){2}) - 2);
 				l = buffer;
 				return true;
 			} else if(len > 0) { // but no terminating line
-				buffer += std::string(tmp.c_str(), len);
+				buffer += std::string(tmp, 0, len);
 			}
 		}
 	}
 	// FIXME: add error checking
 	// finished reading file, no eol, but eof --> ok
 	l = buffer;
-	return true;
+	return !buffer.empty();
 }
 
 /// return current path if a directory, path to file if file, also handles x-caja-desktop

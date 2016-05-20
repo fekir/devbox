@@ -153,20 +153,19 @@ namespace propertypage{
 			return box_;
 		}
 
-		std::vector<EVP_MD_CTX_HANDLE> evps; // init-list would not work...
+		std::vector<EVP_MD_CTX_HANDLE> evps; // init-list does not work...
 		evps.emplace_back(make_EVP_MD_CTX_HANDLE(EVP_md5()));
 		evps.emplace_back(make_EVP_MD_CTX_HANDLE(EVP_sha1()));
 		evps.emplace_back(make_EVP_MD_CTX_HANDLE(EVP_sha256()));
 		evps.emplace_back(make_EVP_MD_CTX_HANDLE(EVP_sha512()));
-		//std::vector<decltype(evps.size())> invalid_evps;
 
-		// FIXME: do not read all file at once - but as stream...
 		std::array<unsigned char, 2048> buffer;
 		while(!input.eof()){
 			const auto readed = input.read(reinterpret_cast<char*>(&buffer.at(0)), buffer.size()).gcount();
 
 			if(input.fail() && !input.eof()){ // something went wrong, but we where not at the end of the file
-				throw std::runtime_error("error reading stream");
+				gtk_container_add(GTK_CONTAINER(box), gtk_label_new ("An error happende while reading the file"));
+				return box_;
 			}
 
 			for(auto it = evps.begin(); it != evps.end();  ){
@@ -221,18 +220,47 @@ namespace propertypage{
 		}
 
 		const auto file_info = reinterpret_cast<CajaFileInfo*>(files->data);
+		std::ofstream ofs("/home/df0/caja_ext.txt", std::ios::app);
+		const auto mimetype = get_mimetype(file_info);
+
+		ofs << mimetype <<std::endl;
 
 		GList* pages = nullptr;
+
+		if(mimetype == mimetype_sharedlib || mimetype == mimetype_exec){
+			// execute command with popen, create box with "raw result"
+			std::string buffer(256, '\0');
+			std::string result;
+			const std::string command = "hardening-check \"" + get_path(file_info) +"/"+get_name(file_info) + "\"";
+			ofs << command << std::endl;
+			POPEN_handle pipe(popen(command.c_str(), "r"));
+
+			while(mygetline(buffer, pipe.get())){
+				result += buffer + "\n";
+			}
+
+			ofs << "out: " << result;
+			GtkWidget_handle box_(gtk_vbox_new(FALSE, 5));
+			auto box = box_.get();
+			assert(GTK_IS_CONTAINER(box)); // FIXME: is it possible to static_assert??
+			auto text_view = create_ro_wrap_text_view();
+			auto buffer_ = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view.get()));
+			gtk_text_buffer_set_text(buffer_, result.c_str(), static_cast<int>(result.size()));
+			gtk_container_add(GTK_CONTAINER(box), gtk_label_new("Output of hardening-check:"));
+			gtk_container_add(GTK_CONTAINER(box), text_view.release());
+
+			gtk_widget_show_all(box);
+			CajaPropertyPage* page = caja_property_page_new ("devbox::property_page",
+															 gtk_label_new ("Info"),
+															 box_.release());
+			pages = g_list_append (pages, page);
+		}
 		auto hashes = create_hash_sum(file_info);
 		if(hashes!=nullptr){
-			GtkWidget_handle box(gtk_vbox_new(FALSE, 1));
-			assert(GTK_IS_CONTAINER(box.get())); // FIXME: is it possible to static_assert??
-			gtk_container_add(GTK_CONTAINER(box.get()), hashes.release());
-			gtk_widget_show_all(box.get());
-
+			gtk_widget_show_all(hashes.get());
 			CajaPropertyPage* page = caja_property_page_new ("devbox::property_page",
 															 gtk_label_new ("Checksum"),
-															 box.release());
+															 hashes.release());
 			pages = g_list_append (pages, page);
 		}
 		return pages;
