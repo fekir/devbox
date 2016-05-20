@@ -25,6 +25,9 @@
 // posix
 #include <dirent.h> // DIR*
 
+// cstd
+#include <cstdio>
+
 // std
 #include <memory> // unique_ptr
 
@@ -34,5 +37,23 @@ struct DIR_deleter{
 	}
 };
 using DIR_handle = std::unique_ptr<DIR, DIR_deleter>;
+
+
+struct FILE_deleter{
+	void operator()(FILE* handle) const {
+		const auto res = fclose(handle); (void)res;
+	}
+};
+/// handle that closes automatically a file with fclose
+using FILE_handle = std::unique_ptr<FILE, FILE_deleter>;
+
+
+struct POPEN_deleter{
+	void operator()(FILE* handle) const {
+		const auto res = pclose(handle); (void)res;
+	}
+};
+// handle that closes automatically a file with pclose, use for handles created with popen
+using POPEN_handle = std::unique_ptr<FILE, POPEN_deleter>;
 
 #endif
