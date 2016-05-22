@@ -48,6 +48,3 @@ set_target_properties(${PROJECT_NAME_TEST}
         LINK_FLAGS "${CAJA_LDFLAGS} ${CAJA_CFLAGS_OTHER}"
 )
 
-#target_link_libraries(${PROJECT_NAME_TEST} ${WIN_LIBRARIES_TO_LINK})
-#target_compile_definitions(${PROJECT_NAME_TEST} PUBLIC "DONOTSAFEREGKEY") # unit test should never change (at least permanently) state of system
-#target_include_directories(${PROJECT_NAME_TEST} PUBLIC ${PROJECT_SOURCE_DIR})
