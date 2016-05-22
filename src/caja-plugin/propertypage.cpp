@@ -220,10 +220,7 @@ namespace propertypage{
 		}
 
 		const auto file_info = reinterpret_cast<CajaFileInfo*>(files->data);
-		std::ofstream ofs("/home/df0/caja_ext.txt", std::ios::app);
 		const auto mimetype = get_mimetype(file_info);
-
-		ofs << mimetype <<std::endl;
 
 		GList* pages = nullptr;
 
@@ -232,14 +229,12 @@ namespace propertypage{
 			std::string buffer(256, '\0');
 			std::string result;
 			const std::string command = "hardening-check \"" + get_path(file_info) +"/"+get_name(file_info) + "\"";
-			ofs << command << std::endl;
 			POPEN_handle pipe(popen(command.c_str(), "r"));
 
 			while(mygetline(buffer, pipe.get())){
 				result += buffer + "\n";
 			}
 
-			ofs << "out: " << result;
 			GtkWidget_handle box_(gtk_vbox_new(FALSE, 5));
 			auto box = box_.get();
 			assert(GTK_IS_CONTAINER(box)); // FIXME: is it possible to static_assert??
