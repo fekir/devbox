@@ -27,6 +27,7 @@
 
 // std
 #include <string>
+#include <algorithm>
 
 
 // array with common spaces, used by trim functions. A lot of UTF characters are missing.
@@ -68,7 +69,7 @@ inline bool mygetline(std::string& l, FILE* fp){
 		std::string tmp(256, '\0');
 		if(fgets(&tmp[0], static_cast<int>(tmp.size()), fp) != nullptr){
 			// fgets does not return lenght, this will not work if tmp contains embedded '\0'
-			const auto len = std::strlen(tmp.c_str());
+			const auto len = std::find(tmp.begin(), tmp.end(), '\0') - tmp.begin();
 			if ((len > 0) && (tmp.at(len-1) == '\n')){ // read untile end of line (what if line ends with '\r'?
 				// remove '\0' and eol, avoid underflow with max
 				buffer += std::string(tmp, 0, std::max(len,decltype(len){2}) - 2);
