@@ -50,7 +50,7 @@ inline std::string get_path(CajaFileInfo* file_info){
 	if(caja_file_info_is_directory(file_info)){
 		const std::string desktop("x-caja-desktop:///");
 		const gchar_handle uri(caja_file_info_get_uri(file_info));
-		std::size_t len = std::strlen(uri.get());
+		const std::size_t len = std::strlen(uri.get());
 		if(len >= desktop.size() && desktop.compare(0, desktop.size(), uri.get(), desktop.size()) == 0){
 			const char* home = g_get_home_dir();
 			return home == nullptr ? "" : home;
