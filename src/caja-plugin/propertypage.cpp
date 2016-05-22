@@ -20,6 +20,7 @@
 #include "propertypage.hpp"
 #include "menu.hpp" // for cm_type
 #include "utils.hpp"
+#include "string_utils.hpp"
 #include "glib_iterator.hpp"
 #include "glib_memory.hpp"
 #include "gtk_memory.hpp"

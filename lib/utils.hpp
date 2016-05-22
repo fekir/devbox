@@ -44,61 +44,6 @@
 #include <algorithm>
 #include <iterator>
 
-
-// array with common spaces, used by trim functions. A lot of UTF characters are missing.
-constexpr char char_to_trim[] = { ' ', '\0', '\t', '\n', '\r', '\v', '\f'};
-
-template < class T, size_t N >
-constexpr size_t array_size( const T (&)[N] ) noexcept{return N;}
-
-
-inline std::string rtrim(const std::string& s){
-	const auto last = s.find_last_not_of(char_to_trim, std::string::npos, array_size(char_to_trim));
-	return s.substr(0, last);
-}
-
-inline std::string ltrim(const std::string& s){
-	const auto first = s.find_first_not_of(char_to_trim, 0, array_size(char_to_trim));
-	return s.substr(first);
-}
-
-inline std::string trim(const std::string& s){
-	// not calling ltrim and rtrim for avoiding one reallocation
-	const auto last = s.find_last_not_of(char_to_trim, std::string::npos, array_size(char_to_trim));
-	const auto first = s.find_first_not_of(char_to_trim, 0, array_size(char_to_trim));
-	return s.substr(first, last-first+1);
-}
-
-
-/// reads a whole line inside a std::string
-inline bool mygetline(std::string& l, FILE* fp){
-	if(feof(fp)){
-		l={};
-		return false;
-	}
-	std::string buffer;
-
-	while(!feof(fp)) {
-		std::string tmp(256, '\0');
-		if(fgets(&tmp[0], static_cast<int>(tmp.size()), fp) != nullptr){
-			// fgets does not return lenght, this will not work if tmp contains embedded '\0'
-			const auto len = std::strlen(tmp.c_str());
-			if ((len > 0) && (tmp.at(len-1) == '\n')){ // read untile end of line (what if line ends with '\r'?
-				// remove '\0' and eol, avoid underflow with max
-				buffer += std::string(tmp, 0, std::max(len,decltype(len){2}) - 2);
-				l = buffer;
-				return true;
-			} else if(len > 0) { // but no terminating line
-				buffer += std::string(tmp, 0, len);
-			}
-		}
-	}
-	// FIXME: add error checking
-	// finished reading file, no eol, but eof --> ok
-	l = buffer;
-	return !buffer.empty();
-}
-
 /// return current path if a directory, path to file if file, also handles x-caja-desktop
 /// on failure (smb:///, sftp, ...) returns empty string
 inline std::string get_path(CajaFileInfo* file_info){

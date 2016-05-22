@@ -5,6 +5,7 @@ project(${APP_NAME}_utils CXX)
 
 set(SOURCE_FILES
 	utils.hpp
+	string_utils.hpp
 	glib_iterator.hpp
 	glib_memory.hpp
 	gtk_memory.hpp
@@ -30,6 +31,7 @@ set(TEST_FILES
 	test/test_iterator.cpp
 	test/test_hash.cpp
 	test/test_hexdump.cpp
+	test/test_string_utils.cpp
 )
 
 source_group("Test Files" FILES ${TEST_FILES})
