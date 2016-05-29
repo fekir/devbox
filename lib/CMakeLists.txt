@@ -14,6 +14,7 @@ set(SOURCE_FILES
 	utils.cpp
 	hexdump.cpp
 	hexdump.hpp
+	process.hpp
 )
 
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
@@ -32,6 +33,7 @@ set(TEST_FILES
 	test/test_hash.cpp
 	test/test_hexdump.cpp
 	test/test_string_utils.cpp
+	test/test_process.cpp
 )
 
 source_group("Test Files" FILES ${TEST_FILES})
