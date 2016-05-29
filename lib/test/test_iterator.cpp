@@ -25,10 +25,6 @@
 // glib
 #include <glib.h> // GList
 
-// posix
-#include <fnmatch.h> // fnmatch
-#include <unistd.h>  // execve
-
 // std
 #include <iostream>
 
