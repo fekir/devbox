@@ -21,6 +21,7 @@
 #include "utils.hpp"
 #include "glib_iterator.hpp"
 #include "glib_memory.hpp"
+#include "process.hpp"
 
 // glib
 #include <glib.h>
@@ -181,21 +182,20 @@ namespace menu{
 	void generic_gui_callback(CajaMenuItem* item, gpointer ptr){
 		(void)item;
 		assert(ptr != nullptr);
-		command_to_execute comtoex = *reinterpret_cast<command_to_execute*>(ptr);
 
-		std::string program = comtoex.program;
-		auto argv = to_argv(comtoex.arguments);
-		argv.insert(argv.begin(), &program[0]);
-		const pid_t child_pid = fork();
-		if (child_pid == 0) {  // in child
-			execve(&program[0], &argv[0], environ); // check != -1
-		}
+		const auto comtoex = *reinterpret_cast<command_to_execute*>(ptr);
+		exec_params p;
+		p.args = comtoex.arguments;
+		p.env = environ_var(environ);
+
+		fork_and_execute(comtoex.program, p);
+
 	}
 
 	void generic_mateterm_callback(CajaMenuItem* item, gpointer ptr){
 		(void)item;
 		assert(ptr != nullptr);
-		command_to_execute comtoex = *reinterpret_cast<command_to_execute*>(ptr);
+		const auto comtoex = *reinterpret_cast<command_to_execute*>(ptr);
 
 		std::string program_and_params = comtoex.program;
 		for(const auto& p : comtoex.arguments){
@@ -206,11 +206,14 @@ namespace menu{
 		std::string param2 = create_command_for_console(program_and_params);
 
 		std::string console = "/usr/bin/mate-terminal";
-		char* const args[] = {&console[0], &param1[0], &param2[0], nullptr};
-		const pid_t child_pid = fork();
-		if (child_pid == 0) {  // in child
-			execve(&console[0], args, environ); // check != -1
-		}
+
+		exec_params p;
+		p.args = {param1, param2};
+		p.env = environ_var(environ);
+		std::ofstream ofs("/home/df0/caja_ext.txt");
+		ofs << param2;
+
+		fork_and_execute(console, p);
 	}
 
 	// apparently neve called, doens't caja reset the connection to a signal?
@@ -223,7 +226,7 @@ namespace menu{
 	std::size_t create_menu_items(CajaMenu& menu_root, const std::vector<CajaFileInfo*>& file_infos, const std::vector<command_and_menu>& parsers){
 		std::size_t to_return = 0;
 		for(auto& v : parsers){
-			std::vector<std::string> add_el = (v.check_if_add == nullptr) ? std::vector<std::string>() : v.check_if_add(file_infos);
+			const auto add_el = (!v.check_if_add) ? std::vector<std::string>() : v.check_if_add(file_infos);
 			if(add_el.empty()){
 				continue;
 			}

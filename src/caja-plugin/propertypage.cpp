@@ -26,6 +26,7 @@
 #include "gtk_memory.hpp"
 #include "openssl_memory.hpp"
 #include "hexdump.hpp"
+#include "process.hpp"
 
 // posix
 #include <sys/stat.h>
@@ -226,15 +227,16 @@ namespace propertypage{
 		GList* pages = nullptr;
 
 		if(mimetype == mimetype_sharedlib || mimetype == mimetype_exec){
-			// execute command with popen, create box with "raw result"
-			std::string buffer(256, '\0');
-			std::string result;
-			const std::string command = "hardening-check \"" + get_path(file_info) +"/"+get_name(file_info) + "\"";
-			POPEN_handle pipe(popen(command.c_str(), "r"));
+			exec_params p;
+			p.args = {get_path(file_info) + "/" + get_name(file_info)};
+			p.captureoutput = true;
 
-			while(mygetline(buffer, pipe.get())){
-				result += buffer + "\n";
+			const auto res = fork_and_execute("/usr/bin/hardening-check", p);
+			if(res.status!=0){
+				return nullptr;
 			}
+
+			std::string result = trim(res.output);
 
 			GtkWidget_handle box_(gtk_vbox_new(FALSE, 5));
 			auto box = box_.get();
