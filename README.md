@@ -21,8 +21,14 @@ As described before, this is a C++ Project, managed with cmake. As for now the d
 ## Roadmap(?)
 Following things needs to be done, not necessarily in this order:
 * Caja does some sort of caching when generating the menu entries the first time, and I've nevers seen the "closureNotify" function being called. If the function never gets called we have a memory leak, but I've found no other way for deleting "objects" when using g_signal_connect_data, or maybe my apporach is completely wrong?
-* the cmake scripts more modular
+* make the cmake scripts more modular
 * Add unit tests, there are already some test cases, but I've not managed to instantiate a GTypeModuleClass for calling caja_module_initialize
 * There is no proper error handling, what should someone do if caja_module_initialize or caja_module_list_types goes wrong?
 * Add more typesafety. As for know there are a lot of casts, due to the nature of the C interface.
+* Add a mechanism to find the supported tools, since they may not be always installed in the same location on all operating systems
+* Add a configuration file, so that developers may be able to change settings (like parameters to be passed to the tools, to hide some options and so on)
+
+## Contributions:
+You are welcome, there is a lot to do, if you have suggestions of what could be added, or have seen some stupid mistakes, let me know
+
 
