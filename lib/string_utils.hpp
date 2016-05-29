@@ -66,13 +66,12 @@ inline bool mygetline(std::string& l, FILE* fp){
 	std::string buffer;
 
 	while(!feof(fp)) {
-		std::string tmp(256, '\0');
+		std::string tmp(256, '\1');
 		if(fgets(&tmp[0], static_cast<int>(tmp.size()), fp) != nullptr){
 			// fgets does not return lenght, this will not work if tmp contains embedded '\0'
 			const auto len = std::find(tmp.begin(), tmp.end(), '\0') - tmp.begin();
-			if ((len > 0) && (tmp.at(len-1) == '\n')){ // read untile end of line (what if line ends with '\r'?
-				// remove '\0' and eol, avoid underflow with max
-				buffer += std::string(tmp, 0, std::max(len,decltype(len){2}) - 2);
+			if ((len > 0) && (tmp.at(len-1) == '\n')){ // read until end of line (what if line ends with '\r'?
+				buffer += std::string(tmp, 0, len-1);
 				l = buffer;
 				return true;
 			} else if(len > 0) { // but no terminating line
