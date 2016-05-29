@@ -205,7 +205,7 @@ inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*> 
 
 	std::vector<std::string> to_return; to_return.reserve(file_infos.size());
 	for(const auto& file_info : file_infos){
-		to_return.push_back(get_path(file_info) + "/" + get_name(file_info));
+		to_return.push_back("\"" + get_path(file_info) + "/" + get_name(file_info) + "\"");
 	}
 	if(to_return.size()>=2){
 		to_return.insert(to_return.begin(), "-t");
