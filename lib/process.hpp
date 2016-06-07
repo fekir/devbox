@@ -85,14 +85,9 @@ inline int execute(const std::string& filename, const environ_var& env, const Ar
 // dumb name, but it's what it does
 // using _Exit and not _exit or exit for avoiding flushing buffers, deleting tmpfiles, and so on
 struct exit_on_exit_in_child{
-	int pid = -1; // 0 to the new process,
-	explicit exit_on_exit_in_child(int pid_) : pid(pid_){
-		if(pid!=0){
-			throw std::runtime_error("This struct should only be used in a forked process!");
-		}
-	}
+	explicit exit_on_exit_in_child(){}
 	~exit_on_exit_in_child(){
-		_Exit(1);
+		_Exit(EXIT_FAILURE);
 	}
 };
 
@@ -126,7 +121,7 @@ inline exec_result fork_and_execute(std::string program, const exec_params& p){
 		return res;
 	}
 	if (pid == 0) {
-		exit_on_exit_in_child _(pid);
+		exit_on_exit_in_child _;
 		if(p.captureoutput){
 			close(pipefd[0]);
 			dup2(pipefd[1], STDOUT_FILENO);
@@ -151,6 +146,60 @@ inline exec_result fork_and_execute(std::string program, const exec_params& p){
 		int status=0;
 		::waitpid(pid, &status, 0);
 	}
+	res.status = 0;
+	return res;
+}
+
+
+inline exec_result fork_and_execute_in_mate_term(std::string program, const exec_params& p){
+	exec_result res; (void)p; (void)program;
+
+	int fd_p2m[2]={};
+
+	if(::pipe(fd_p2m) != 0){ //create a pipe
+		res.status = -2;
+		return res;
+	}
+
+	const auto pidmate = ::fork();
+	if(pidmate < 0){
+		res.status = -3;
+		return res;
+	}
+	if (pidmate == 0) {
+		exit_on_exit_in_child _;
+		if (dup2(fd_p2m[0], STDIN_FILENO) !=-1 /*&& close(fd_p2m[0]) == 0 && close(fd_p2m[1]) == 0*/){
+			execlp("mate-terminal", "mate-terminal", (char*)NULL);
+		}
+	}
+	std::this_thread::sleep_for (std::chrono::seconds(1));
+	std::string s = "echo a\n";
+
+	FILE_handle input(fdopen(fd_p2m[1], "w"));
+	if(fputs(s.c_str(), input.get())<0){
+		res.status = -4;
+		return res;
+	}/*
+	if(write(fd_p2m[1], s.c_str(), s.size()) != s.size()){
+		res.status = -4;
+		return res;
+	}*/
+
+/*
+	const auto pid = ::fork();
+	if(pid < 0){
+		return res;
+	}
+	if (pid == 0) {
+		exit_on_exit_in_child _(pid);
+		//close(opipe[0]);
+		dup2(p2m[1], STDOUT_FILENO);
+		dup2(p2m[1], STDERR_FILENO);
+		execute(program, p.env, p.args);
+	}
+
+
+*/
 	res.status = 0;
 	return res;
 }
