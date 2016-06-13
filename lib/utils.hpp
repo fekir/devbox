@@ -1,19 +1,19 @@
-/*
-	Copyright (C) 2016 Federico Kircheis
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+////
+// Copyright (C) 2016 Federico Kircheis
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
 
 /// This package contains utility functions that do not belong to a specific module (yet)
 
@@ -123,7 +123,7 @@ inline bool dir_match(const std::string& directory, const std::vector<std::strin
 	while(dp != nullptr){
 		const std::string file(dp->d_name ? dp->d_name : "");
 		const auto it = std::find_if(matcher.begin(), matcher.end(),
-									 [&file](const std::string& m){return fnmatch(m.c_str(), file.c_str(), 0) == 0;}
+		                             [&file](const std::string& m){return fnmatch(m.c_str(), file.c_str(), 0) == 0;}
 		);
 		if( it != matcher.end()){
 			return true;
@@ -199,8 +199,8 @@ inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*> 
 	}
 	std::vector<CajaFileInfo*> file_infos(file_infos_);
 	const auto it = std::remove_if(file_infos.begin(), file_infos.end(),
-								   [](CajaFileInfo* f){return get_mimetype(f)!=mimetype_jpeg;}
-			);
+	                               [](CajaFileInfo* f){return get_mimetype(f)!=mimetype_jpeg;}
+	        );
 	file_infos.erase(it,file_infos.end());
 
 	std::vector<std::string> to_return; to_return.reserve(file_infos.size());

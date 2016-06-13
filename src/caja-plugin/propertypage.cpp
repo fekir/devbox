@@ -1,20 +1,19 @@
-/*
-	Copyright (C) 2016 Federico Kircheis
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+//
+// Copyright (C) 2016 Federico Kircheis
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
 
 // local
 #include "propertypage.hpp"
@@ -69,7 +68,7 @@ namespace propertypage{
 		// if not set plugins get loaded again and again...
 		info.class_size = sizeof (PropertyPageClass);
 		static_assert(std::is_pod<PropertyPageClass>::value,
-					  "needs to be POD since it is allocated and not inited by Caja");
+		              "needs to be POD since it is allocated and not inited by Caja");
 
 		info.base_init = nullptr;
 		info.base_finalize = nullptr;
@@ -81,7 +80,7 @@ namespace propertypage{
 		// if not set plugins get loaded again and again...
 		info.instance_size = sizeof (PropertyPage);
 		static_assert(std::is_pod<PropertyPage>::value,
-					  "needs to be POD since it is allocated and not inited by Caja");
+		              "needs to be POD since it is allocated and not inited by Caja");
 		info.n_preallocs = 0;
 		info.instance_init = propertypage_init;
 
@@ -94,14 +93,14 @@ namespace propertypage{
 
 
 		GType type = g_type_module_register_type (module,
-												  G_TYPE_OBJECT,
-												  "ContextMenu",
-												  &info, static_cast<GTypeFlags>(0));
+		                                          G_TYPE_OBJECT,
+		                                          "ContextMenu",
+		                                          &info, static_cast<GTypeFlags>(0));
 
 		g_type_module_add_interface (module,
-									 type,
-									 CAJA_TYPE_PROPERTY_PAGE_PROVIDER, // è per questo che ricevo un CajaMenuInterface????
-									 &menu_provider_iface_info);
+		                             type,
+		                             CAJA_TYPE_PROPERTY_PAGE_PROVIDER, // è per questo che ricevo un CajaMenuInterface????
+		                             &menu_provider_iface_info);
 
 		// alternative sono CAJA_TYPE_COLUMN_PROVIDER, CAJA_TYPE_INFO_PROVIDER, CAJA_TYPE_PROPERTY_PAGE_PROVIDER, ...
 		cm_type.push_back(type);
@@ -249,16 +248,16 @@ namespace propertypage{
 
 			gtk_widget_show_all(box);
 			CajaPropertyPage* page = caja_property_page_new ("devbox::property_page",
-															 gtk_label_new ("Info"),
-															 box_.release());
+			                                                 gtk_label_new ("Info"),
+			                                                 box_.release());
 			pages = g_list_append (pages, page);
 		}
 		auto hashes = create_hash_sum(file_info);
 		if(hashes!=nullptr){
 			gtk_widget_show_all(hashes.get());
 			CajaPropertyPage* page = caja_property_page_new ("devbox::property_page",
-															 gtk_label_new ("Checksum"),
-															 hashes.release());
+			                                                 gtk_label_new ("Checksum"),
+			                                                 hashes.release());
 			pages = g_list_append (pages, page);
 		}
 		return pages;

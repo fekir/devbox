@@ -1,19 +1,19 @@
-/*
-	Copyright (C) 2016 Federico Kircheis
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+//
+// Copyright (C) 2016 Federico Kircheis
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
 
 /// Main function used for implementing the interface of the Caja Extension
 
@@ -87,7 +87,7 @@ namespace menu{
 		check_id_add_func check_if_add;
 		bool executeinterminal = true;
 		explicit command_and_menu(const std::string& program_, const check_id_add_func& func_, const bool executeinterminal_ ) :
-			program(program_), check_if_add(func_), executeinterminal(executeinterminal_){}
+		    program(program_), check_if_add(func_), executeinterminal(executeinterminal_){}
 	};
 
 	struct command_to_execute{

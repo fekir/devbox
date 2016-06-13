@@ -1,20 +1,19 @@
-/*
-	Copyright (C) 2016 Federico Kircheis
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+//
+// Copyright (C) 2016 Federico Kircheis
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
 
 /// This package provides an interface for the GList and GSList containers to the <iterator> library
 
@@ -110,9 +109,9 @@ inline int compare_size(const GList* list, std::size_t to_compare){
 		el = el->prev;
 	}
 	return
-			counter > to_compare ? 1 :
-			counter < to_compare ? -1 :
-			0;
+	        counter > to_compare ? 1 :
+	        counter < to_compare ? -1 :
+	        0;
 }
 
 /// Since calculating the lenght of a GSList is a O(n) operation, where n is the size of the GSList,
@@ -133,9 +132,9 @@ inline int compare_size(const GSList* list, std::size_t to_compare){
 		el = el->next;
 	}
 	return
-			counter > to_compare ? 1 :
-			counter < to_compare ? -1 :
-			0;
+	        counter > to_compare ? 1 :
+	        counter < to_compare ? -1 :
+	        0;
 }
 
 
@@ -231,7 +230,7 @@ std::vector<T*> to_vector(const glist* list){
 	is_glist_or_sglist(glist);
 	std::vector<T*> to_return;
 	std::transform(begin(list), end(list), std::back_insert_iterator<std::vector<T*>>(to_return),
-				   [](const gpointer p){return reinterpret_cast<T*>(p);}
+	               [](const gpointer p){return reinterpret_cast<T*>(p);}
 	);
 	return to_return;
 }

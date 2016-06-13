@@ -1,20 +1,19 @@
-/*
-	Copyright (C) 2016 Federico Kircheis
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+//
+// Copyright (C) 2016 Federico Kircheis
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
 
 // local
 #include "menu.hpp"
@@ -58,7 +57,7 @@ namespace menu{
 		// if not set plugins get loaded again and again...
 		info.class_size = sizeof (ContextMenuClass);
 		static_assert(std::is_pod<ContextMenuClass>::value,
-					  "needs to be POD since it is allocated and not inited by Caja");
+		              "needs to be POD since it is allocated and not inited by Caja");
 
 		info.base_init = nullptr;
 		info.base_finalize = nullptr;
@@ -70,7 +69,7 @@ namespace menu{
 		// if not set plugins get loaded again and again...
 		info.instance_size = sizeof (ContextMenu);
 		static_assert(std::is_pod<ContextMenu>::value,
-					  "needs to be POD since it is allocated and not inited by Caja");
+		              "needs to be POD since it is allocated and not inited by Caja");
 		info.n_preallocs = 0;
 		info.instance_init = context_menu_init;
 
@@ -83,14 +82,14 @@ namespace menu{
 
 
 		GType type = g_type_module_register_type (module,
-												  G_TYPE_OBJECT,
-												  "ContextMenu",
-												  &info, static_cast<GTypeFlags>(0));
+		                                          G_TYPE_OBJECT,
+		                                          "ContextMenu",
+		                                          &info, static_cast<GTypeFlags>(0));
 
 		g_type_module_add_interface (module,
-									 type,
-									 CAJA_TYPE_MENU_PROVIDER, // è per questo che ricevo un CajaMenuInterface????
-									 &menu_provider_iface_info);
+		                             type,
+		                             CAJA_TYPE_MENU_PROVIDER, // è per questo che ricevo un CajaMenuInterface????
+		                             &menu_provider_iface_info);
 
 		// alternative sono CAJA_TYPE_COLUMN_PROVIDER, CAJA_TYPE_INFO_PROVIDER, CAJA_TYPE_PROPERTY_PAGE_PROVIDER, ...
 		cm_type.push_back(type);
@@ -171,10 +170,10 @@ namespace menu{
 		(void)file;
 
 		GtkWidget *dialog = gtk_message_dialog_new_with_markup (
-					nullptr, static_cast<GtkDialogFlags>(0),
-					GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE,
-					"<big><b>You have selected this element.</b></big>\n\n"
-					"Too bad it doesn't do anything useful...");
+		            nullptr, static_cast<GtkDialogFlags>(0),
+		            GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE,
+		            "<big><b>You have selected this element.</b></big>\n\n"
+		            "Too bad it doesn't do anything useful...");
 		gtk_dialog_run (GTK_DIALOG(dialog));
 		gtk_widget_destroy (dialog); // FIXME: put in destructor
 	}
@@ -231,14 +230,14 @@ namespace menu{
 				continue;
 			}
 			const std::string program = !v.menu_title.empty() ? v.menu_title :
-																get_name(v.program); // fixme, only command, no path
+			                                                    get_name(v.program); // fixme, only command, no path
 			const std::string title = "devbox::" + program;
 			const std::string label = !v.menu_label.empty() ? v.menu_label :
-															  "Open with " + program;
+			                                                  "Open with " + program;
 			const std::string tip = !v.menu_tip.empty() ? v.menu_tip :
-														  "Open with " + program;\
+			                                              "Open with " + program;\
 			CajaMenuItem* menu = caja_menu_item_new
-					(title.c_str(), label.c_str(), tip.c_str(), v.menu_icon.c_str());
+			        (title.c_str(), label.c_str(), tip.c_str(), v.menu_icon.c_str());
 
 			// these info needs to be generated from command_and_menu -- currently works for cmake and qtcreator
 			command_to_execute* toadd2 = new command_to_execute;
@@ -246,8 +245,8 @@ namespace menu{
 			toadd2->program = v.program;
 
 			g_signal_connect_data(menu, "activate",
-								  G_CALLBACK (v.executeinterminal ? generic_mateterm_callback : generic_gui_callback),
-								  static_cast<gpointer>(toadd2), &closureNotify, static_cast<GConnectFlags>(0));
+			                      G_CALLBACK (v.executeinterminal ? generic_mateterm_callback : generic_gui_callback),
+			                      static_cast<gpointer>(toadd2), &closureNotify, static_cast<GConnectFlags>(0));
 			// static_assert that file is the same type of 2nd param of callback function!
 			caja_menu_append_item(&menu_root, menu);
 			++to_return;
