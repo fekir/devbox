@@ -46,6 +46,15 @@ inline std::vector<char*> to_argv(std::string& program, std::vector<std::string>
 	return toreturn;
 }
 
+inline std::vector<char*> to_argv(std::vector<std::string>& arguments){
+	std::vector<char*> toreturn; toreturn.reserve(arguments.size()+1);
+	for(auto& arg: arguments){
+		toreturn.push_back(&arg[0]);
+	}
+	toreturn.push_back(nullptr);
+	return toreturn;
+}
+
 /// use struct instead of char* const*, for avoiding confusione between env and args
 struct environ_var{
 	char* const* envp = nullptr;
@@ -64,6 +73,11 @@ inline int execute(std::string filename, const environ_var& env, std::vector<std
 	return execvp(filename.c_str(), &argv[0]);
 }
 
+inline int execute(FILE* file, const environ_var& env, std::vector<std::string> args){
+	const int file_no = fileno(file);
+	const auto argv = to_argv(args);
+	return fexecve(file_no, &argv[0], env.getenv());
+}
 
 // for using const char* and std::string inside the variadic execute
 inline const char* to_str(const std::string& s){
