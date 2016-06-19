@@ -19,9 +19,7 @@ endmacro()
 
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/)
-message("${CMAKE_SOURCE_DIR}/cmake/")
-# flags for win builds
-#include(WIN_FLAGS)
+
 if(MSVC)
 	# flags for msvc compiler
 	include(MSVC_FLAGS)
@@ -30,6 +28,7 @@ else()
 	include(GCC_FLAGS)
 endif()
 
+include(cppcheck)
 
 find_package(catch REQUIRED)
 include_directories(${CATCH_INCLUDE_DIRS})
@@ -56,6 +55,7 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 set(APP_NAME "DevBox")
 
 include_directories(lib)
+analyze_directory_with_cppcheck(${APP_NAME} ${CMAKE_CURRENT_SOURCE_DIR} "")
 
 add_definitions(-DGTK_DISABLE_DEPRECATED)
 

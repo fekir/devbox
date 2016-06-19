@@ -17,6 +17,11 @@ add_library(${PROJECT_NAME} SHARED
 	${SOURCE_FILES}
 )
 
+
+# create empty list
+list(APPEND additional_includes "")
+analyze_target_with_cppcheck(${PROJECT_NAME} additional_includes)
+
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
 
 set_target_properties(${PROJECT_NAME}
@@ -57,9 +62,10 @@ set(PROJECT_NAME_TEST "${PROJECT_NAME}Test")
 add_executable(${PROJECT_NAME_TEST} test/main.cpp ${SOURCE_FILES} ${TEST_FILES})
 target_link_libraries(${PROJECT_NAME_TEST} ${OPENSSL_LIBRARIES})
 
+
 set_property(TARGET ${PROJECT_NAME_TEST} PROPERTY CXX_STANDARD 11)
 
 set_target_properties(${PROJECT_NAME_TEST}
-		PROPERTIES
-		LINK_FLAGS "${CAJA_LDFLAGS} ${CAJA_CFLAGS_OTHER}"
+	PROPERTIES
+	LINK_FLAGS "${CAJA_LDFLAGS} ${CAJA_CFLAGS_OTHER}"
 )
