@@ -157,12 +157,12 @@ public:
 	const gpointer& operator*() const { assert(node!=nullptr); return node->data; } // FIXME: add type deduction for return value
 
 	GListForwardIterator& operator++() { assert(node!=nullptr); node = node->next; return *this;}
-	GListForwardIterator operator++(int) { assert(node!=nullptr); GListForwardIterator it(*this);node = node->next; return it;}
+	GListForwardIterator operator++(int) { assert(node!=nullptr); GListForwardIterator it(*this); node = node->next; return it;}
 
 	// actually this is not required by the Forward iterator interface
 	GListForwardIterator operator+(int i) {
 		GListForwardIterator iter = *this;
-		while (i-- > 0) {
+		while(i-- > 0){
 			++iter;
 		}
 		return iter;

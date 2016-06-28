@@ -50,21 +50,21 @@ namespace propertypage{
 		GObjectClass parent_class;
 	} PropertyPageClass;
 
-	void propertypage_register_type (GTypeModule *module);
+	void propertypage_register_type(GTypeModule* module);
 
-	void list_types (const GType **types, int *num_types);
+	void list_types(const GType** types, int* num_types);
 
 	/// Initializes PropertyPageClass
 	void propertypage_class_init(gpointer g_class, gpointer class_data);
 
 	/// Initializes PropertyPage
-	void propertypage_init(GTypeInstance *instance, gpointer g_class);
+	void propertypage_init(GTypeInstance* instance, gpointer g_class);
 
 	/// register the callback function for CajaMenuProviderIface
 	void propertypage_iface_init(gpointer g_iface, gpointer iface_data);
 
 	// Callback function
-	GList* get_pages(CajaPropertyPageProvider *provider, GList *files);
+	GList* get_pages(CajaPropertyPageProvider* provider, GList* files);
 }
 
 #endif

@@ -26,7 +26,7 @@
 TEST_CASE("echo_", "[process][echo]") {
 	const auto pid = ::fork();
 	REQUIRE(pid != -1);
-	if (pid == 0) {
+	if(pid == 0){
 		exit_on_exit_in_child _;
 		execute("/bin/echo", environ_var(), {"a", "b"});
 	}
@@ -35,7 +35,7 @@ TEST_CASE("echo_", "[process][echo]") {
 TEST_CASE("echo__", "[process][echo]") {
 	const auto pid = ::fork();
 	REQUIRE(pid != -1);
-	if (pid == 0) {
+	if(pid == 0){
 		exit_on_exit_in_child _;
 		execute("/bin/echo", environ_var(), std::string("a"), "b");
 	}

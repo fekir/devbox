@@ -29,14 +29,14 @@
 #include <fstream>
 
 // --- extension interface ---
-void caja_module_initialize (GTypeModule *module){
+void caja_module_initialize(GTypeModule* module){
 	menu::context_menu_register_type(module);
 	propertypage::propertypage_register_type(module);
 }
 
-void caja_module_shutdown (){
+void caja_module_shutdown(){
 }
 
-void caja_module_list_types (const GType **types, int *num_types){
+void caja_module_list_types(const GType** types, int* num_types){
 	menu::list_types(types, num_types);
 }

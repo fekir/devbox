@@ -103,7 +103,7 @@ TEST_CASE("GList_iter1", "[GList][iterator][forward]") {
 	// Assure that I've understood how GList works
 	REQUIRE(list->prev == nullptr);
 	REQUIRE(list->data == &t1);
-	REQUIRE(list->next != nullptr );
+	REQUIRE(list->next != nullptr);
 	REQUIRE(list->next->data == &t2);
 
 	// Test the iterator!

@@ -57,7 +57,7 @@ namespace details{
 	template<class iter>
 	void preallocateifrandomaccess(const iter& begin, const iter& end, std::string& content) {
 		using iter_type = typename std::iterator_traits<iter>::iterator_category;
-		if(std::is_same<iter_type,std::random_access_iterator_tag>::value){
+		if(std::is_same<iter_type, std::random_access_iterator_tag>::value) {
 			const auto sizetoencode = std::distance(begin, end);
 			if(
 			   sizetoencode < 0 ||
@@ -69,7 +69,7 @@ namespace details{
 		}
 	}
 
-	inline bool isHexString(const std::string &content) {
+	inline bool isHexString(const std::string& content) {
 		const bool isLengthValid = (content.length() % 2 == 0);
 		// add check of characters
 		return isLengthValid;
@@ -80,7 +80,7 @@ namespace details{
 class hexdump {
 private:
 	std::string content;
-	explicit hexdump(const std::string &c) : content(c) {
+	explicit hexdump(const std::string& c) : content(c) {
 		assert(details::isHexString(c));
 	}
 
@@ -103,7 +103,7 @@ public:
 	template<class iter>
 	static hexdump dump(iter begin, iter end){
 		// compile check iterators
-		using value_type_with_qualifier = typename std::decay< decltype(*begin) >::type;
+		using value_type_with_qualifier = typename std::decay<decltype(*begin)>::type;
 		using value_type = typename std::remove_cv<value_type_with_qualifier>::type;
 		static_assert( // check type --> remove identifier
 		               std::is_same<value_type,char>::value ||
@@ -115,7 +115,7 @@ public:
 		std::string content;
 		details::preallocateifrandomaccess(begin, end, content);
 
-		for (; begin != end; ++begin) {
+		for(; begin != end; ++begin){
 			auto c = details::to_hex(static_cast<unsigned char>(*begin));
 			content += c[0];
 			content += c[1];
@@ -148,7 +148,7 @@ public:
 
 		std::vector<unsigned char> output;
 		output.reserve(content.length() / 2);
-		for (auto i = decltype(content.length()){0}; i != content.length(); i += 2)	{
+		for (auto i = decltype(content.length()){0}; i != content.length(); i += 2){
 			assert(i < content.length());
 			const char a = content.at(i);
 			const char* p = std::lower_bound(std::begin(lut), std::end(lut), a);

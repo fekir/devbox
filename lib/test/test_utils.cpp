@@ -32,13 +32,13 @@
 #include <iostream>
 
 TEST_CASE("filematcher", ""){
-	REQUIRE(FNM_NOMATCH!=0);
-	REQUIRE(fnmatch("*", "hello.txt",0) == 0);
-	REQUIRE(fnmatch("*.txt", "hello.txt",0) == 0);
-	REQUIRE(fnmatch("*.txt2", "hello.txt",0) == FNM_NOMATCH);
+	REQUIRE(FNM_NOMATCH != 0);
+	REQUIRE(fnmatch("*", "hello.txt", 0) == 0);
+	REQUIRE(fnmatch("*.txt", "hello.txt", 0) == 0);
+	REQUIRE(fnmatch("*.txt2", "hello.txt", 0) == FNM_NOMATCH);
 	//REQUIRE(fnmatch("*.txt || *.txt2", "hello.txt", 0) == 0); // --> does not work!!!
 	//REQUIRE(fnmatch("*.{txt,txt2}", "hello.txt", 0) == 0);
-	REQUIRE(fnmatch("hello.txt", "hello.txt",0) == 0);
+	REQUIRE(fnmatch("hello.txt", "hello.txt", 0) == 0);
 }
 
 TEST_CASE("consoleprogram", "[.]"){
@@ -51,18 +51,18 @@ TEST_CASE("consoleprogram", "[.]"){
 	char* const args[] = {&console[0], &param1[0], &param2[0], nullptr};
 	//char* const env[] = {&display[0], nullptr};
 	auto res = execve(args[0], args, environ); // check != -1
-	REQUIRE(res!=-1);
+	REQUIRE(res != -1);
 }
 
 TEST_CASE("guiprogram", "[.]"){
 	//std::string display = "DISPLAY=" + get_env("DISPLAY");
 	std::string cmake_gui = "/usr/bin/cmake-gui";
 
-	extern char **environ;
+	extern char** environ;
 	char* const args[] = {&cmake_gui[0], nullptr};
 	//char* const env[] = {&display[0], nullptr};
 	const pid_t child_pid = fork();
-	if (child_pid == 0) {  // in child
+	if(child_pid == 0){ // in child
 		const auto res = execve(args[0], args, environ);
 		REQUIRE(execve(args[0], args, environ) != -1);
 	}

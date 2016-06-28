@@ -35,13 +35,13 @@
 TEST_CASE("firstel", "[.]"){
 
 	// FIXME: GLib-GObject-ERROR **: cannot create instance of abstract (non-instantiatable) type 'GTypeModule'
-	auto module = reinterpret_cast<GTypeModuleClass*>(g_object_new (G_TYPE_TYPE_MODULE, nullptr));
+	auto module = reinterpret_cast<GTypeModuleClass*>(g_object_new(G_TYPE_TYPE_MODULE, nullptr));
 	caja_module_initialize((GTypeModule*)module);
 
 	int num = 0;
-	const GType *types = nullptr;
+	const GType* types = nullptr;
 	caja_module_list_types(&types, &num);
-	REQUIRE(num >0);
+	REQUIRE(num > 0);
 
 	caja_module_shutdown();
 

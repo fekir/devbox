@@ -39,7 +39,7 @@
 inline std::vector<char*> to_argv(std::string& program, std::vector<std::string>& arguments){
 	std::vector<char*> toreturn; toreturn.reserve(arguments.size()+2);
 	toreturn.push_back(&program[0]);
-	for(auto& arg: arguments){
+	for(auto& arg : arguments) {
 		toreturn.push_back(&arg[0]);
 	}
 	toreturn.push_back(nullptr);
@@ -48,7 +48,7 @@ inline std::vector<char*> to_argv(std::string& program, std::vector<std::string>
 
 inline std::vector<char*> to_argv(std::vector<std::string>& arguments){
 	std::vector<char*> toreturn; toreturn.reserve(arguments.size()+1);
-	for(auto& arg: arguments){
+	for(auto& arg : arguments) {
 		toreturn.push_back(&arg[0]);
 	}
 	toreturn.push_back(nullptr);
@@ -58,7 +58,7 @@ inline std::vector<char*> to_argv(std::vector<std::string>& arguments){
 /// use struct instead of char* const*, for avoiding confusione between env and args
 struct environ_var{
 	char* const* envp = nullptr;
-	explicit environ_var(char *const envp_[]) : envp(envp_){}
+	explicit environ_var(char* const envp_[]) : envp(envp_){}
 	explicit environ_var(){}
 	char* const* getenv() const {return envp;}
 };
@@ -124,7 +124,7 @@ struct exec_result{
 // FIXME: with posix_spawn it may reduce code complexity
 inline exec_result fork_and_execute(std::string program, const exec_params& p){
 	exec_result res;
-	int pipefd[2]={};
+	int pipefd[2] = {};
 	if(p.captureoutput){
 		if(::pipe(pipefd) != 0){ //create a pipe
 			return res;
@@ -134,7 +134,7 @@ inline exec_result fork_and_execute(std::string program, const exec_params& p){
 	if(pid < 0){
 		return res;
 	}
-	if (pid == 0) {
+	if(pid == 0){
 		exit_on_exit_in_child _;
 		if(p.captureoutput){
 			close(pipefd[0]);
@@ -157,7 +157,7 @@ inline exec_result fork_and_execute(std::string program, const exec_params& p){
 		res.output = result;
 	}
 	if(p.waitfinishes){
-		int status=0;
+		int status = 0;
 		::waitpid(pid, &status, 0);
 	}
 	res.status = 0;
@@ -168,7 +168,7 @@ inline exec_result fork_and_execute(std::string program, const exec_params& p){
 inline exec_result fork_and_execute_in_mate_term(std::string program, const exec_params& p){
 	exec_result res; (void)p; (void)program;
 
-	int fd_p2m[2]={};
+	int fd_p2m[2] = {};
 
 	if(::pipe(fd_p2m) != 0){ //create a pipe
 		res.status = -2;
@@ -180,13 +180,13 @@ inline exec_result fork_and_execute_in_mate_term(std::string program, const exec
 		res.status = -3;
 		return res;
 	}
-	if (pidmate == 0) {
+	if(pidmate == 0){
 		exit_on_exit_in_child _;
-		if (dup2(fd_p2m[0], STDIN_FILENO) !=-1 /*&& close(fd_p2m[0]) == 0 && close(fd_p2m[1]) == 0*/){
+		if(dup2(fd_p2m[0], STDIN_FILENO) != -1 /*&& close(fd_p2m[0]) == 0 && close(fd_p2m[1]) == 0*/){
 			execlp("mate-terminal", "mate-terminal", (char*)NULL);
 		}
 	}
-	std::this_thread::sleep_for (std::chrono::seconds(1));
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	std::string s = "echo a\n";
 
 	FILE_handle input(fdopen(fd_p2m[1], "w"));

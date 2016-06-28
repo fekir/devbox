@@ -55,11 +55,11 @@ inline std::string get_path(CajaFileInfo* file_info){
 			const char* home = g_get_home_dir();
 			return home == nullptr ? "" : home;
 		}
-		const gchar_handle path(g_filename_from_uri (uri.get(), nullptr, nullptr));
+		const gchar_handle path(g_filename_from_uri(uri.get(), nullptr, nullptr));
 		return path == nullptr ? "" : path.get();
 	}
-	const gchar_handle uri(caja_file_info_get_parent_uri (file_info));
-	const gchar_handle path(g_filename_from_uri (uri.get(), nullptr, nullptr));
+	const gchar_handle uri(caja_file_info_get_parent_uri(file_info));
+	const gchar_handle path(g_filename_from_uri(uri.get(), nullptr, nullptr));
 	return path == nullptr ? "" : path.get();
 }
 
@@ -67,7 +67,7 @@ inline std::string get_path(CajaFileInfo* file_info){
 /// a path is a directory if it ends wit '/' (linux)
 inline std::string get_path(const std::string& file_info){
 	const size_t last_slash = file_info.find_last_of("/");
-	if (std::string::npos == last_slash) {
+	if(std::string::npos == last_slash) {
 		return "";
 	}
 	return file_info.substr(0, last_slash + 1);
@@ -77,15 +77,15 @@ inline std::string get_path(const std::string& file_info){
 /// removes path if present
 inline std::string get_name(std::string file_info){
 	const size_t last_slash = file_info.find_last_of("/");
-	if (std::string::npos != last_slash) {
+	if(std::string::npos != last_slash) {
 		file_info.erase(0, last_slash + 1);
 	}
 	return file_info;
 }
 
 inline std::string get_name(CajaFileInfo* file_info){
-	gchar_handle n (caja_file_info_get_name(file_info));
-	std::string name =  (n == nullptr) ? "" : n.get();
+	gchar_handle n(caja_file_info_get_name(file_info));
+	std::string name = (n == nullptr) ? "" : n.get();
 	return name;
 }
 
@@ -94,14 +94,14 @@ const std::string mimetype_sharedlib("application/x-sharedlib");
 const std::string mimetype_jpeg("image/jpeg");
 
 inline std::string get_mimetype(CajaFileInfo* file_info){
-	gchar_handle myme_type(caja_file_info_get_mime_type (file_info));
+	gchar_handle myme_type(caja_file_info_get_mime_type(file_info));
 	return (myme_type == nullptr) ? "" : myme_type.get();
 }
 
 // searches if at least on of the asked file is present
 inline bool dir_contains(const std::string& directory, const std::vector<std::string>& files){
 	const DIR_handle dirp(opendir(directory.c_str()));
-	if(dirp== nullptr){
+	if(dirp == nullptr){
 		return false;
 	}
 	dirent* dp = readdir(dirp.get());
@@ -125,7 +125,7 @@ inline bool dir_match(const std::string& directory, const std::vector<std::strin
 		const auto it = std::find_if(matcher.begin(), matcher.end(),
 		                             [&file](const std::string& m){return fnmatch(m.c_str(), file.c_str(), 0) == 0;}
 		);
-		if( it != matcher.end()){
+		if(it != matcher.end()){
 			return true;
 		}
 		dp = readdir(dirp.get());
@@ -158,13 +158,13 @@ inline std::vector<std::string> is_cmake_project(const std::vector<CajaFileInfo*
 
 const std::vector<std::string> c_cpp_files = {"*.cpp", "*.hpp", "*.h", "*.c"};
 inline std::vector<std::string> cppcheck_analyze(const std::vector<CajaFileInfo*>& file_infos){
-	const auto lambda1 =[](CajaFileInfo* f){
+	const auto lambda1 = [](CajaFileInfo* f){
 		const auto name = get_name(f);
 		return std::any_of(c_cpp_files.begin(), c_cpp_files.end(), [&name](const std::string& file_type){
-			return fnmatch(file_type.c_str(), name.c_str(), 0) ==0;
+			return fnmatch(file_type.c_str(), name.c_str(), 0) == 0;
 		});
 	};
-	if(!std::any_of(file_infos.begin(), file_infos.end(),lambda1)){
+	if(!std::any_of(file_infos.begin(), file_infos.end(), lambda1)){
 		return {};
 	}
 	return { "--enable=all", get_path(file_infos.at(0))};
@@ -215,7 +215,7 @@ inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*> 
 
 inline std::vector<std::string> use_valgrind(const std::vector<CajaFileInfo*> file_infos){
 	if(file_infos.size() != 1 || get_mimetype(file_infos.at(0)) != mimetype_exec){
-		return{};
+		return {};
 	}
 	return {get_path(file_infos.at(0)) + "/" + get_name(file_infos.at(0))};
 }
@@ -227,7 +227,7 @@ inline std::string get_env(const std::string& var){
 
 inline std::string create_command_for_console(const std::string& program_and_param){
 	const std::string newline = "\"\n\"";
-	const auto separator = "\"" +std::string(80, '#') + "\n\"";
+	const auto separator = "\"" + std::string(80, '#') + "\n\"";
 
 	std::string command = "/bin/bash -ic 'echo executing \"" + program_and_param + "\";\n";
 	command += "printf " + separator + newline + ";";

@@ -51,15 +51,15 @@ namespace menu{
 		GObjectClass parent_class;
 	} ContextMenuClass;
 
-	void context_menu_register_type (GTypeModule *module);
+	void context_menu_register_type(GTypeModule* module);
 
-	void list_types (const GType **types, int *num_types);
+	void list_types(const GType** types, int* num_types);
 
 	/// Initializes ContextMenuClass
 	void context_menu_class_init(gpointer g_class, gpointer class_data);
 
 	/// Initializes ContextMenu
-	void context_menu_init(GTypeInstance *instance, gpointer g_class);
+	void context_menu_init(GTypeInstance* instance, gpointer g_class);
 
 	/// register the callback function for CajaMenuProviderIface
 	void menu_provider_iface_init(gpointer g_iface, gpointer iface_data);
@@ -68,9 +68,9 @@ namespace menu{
 	/// called many times
 	/// receives the list of selected files/background
 	/// creates the list of menu element and callback functions when element is clicked
-	GList* get_file_items(CajaMenuProvider *provider, GtkWidget *window, GList *files);
+	GList* get_file_items(CajaMenuProvider* provider, GtkWidget* window, GList* files);
 
-	GList* get_background_items(CajaMenuProvider *provider, GtkWidget *window, CajaFileInfo *current_folder);
+	GList* get_background_items(CajaMenuProvider* provider, GtkWidget* window, CajaFileInfo* current_folder);
 
 
 
@@ -86,8 +86,8 @@ namespace menu{
 		std::string menu_icon;     // icon of menu, if empty none is shown
 		check_id_add_func check_if_add;
 		bool executeinterminal = true;
-		explicit command_and_menu(const std::string& program_, const check_id_add_func& func_, const bool executeinterminal_ ) :
-		    program(program_), check_if_add(func_), executeinterminal(executeinterminal_){}
+		explicit command_and_menu(const std::string& program_, const check_id_add_func& func_, const bool executeinterminal_) :
+			program(program_), check_if_add(func_), executeinterminal(executeinterminal_) {}
 	};
 
 	struct command_to_execute{
@@ -95,20 +95,21 @@ namespace menu{
 		std::vector<std::string> arguments;
 	};
 
-	inline std::vector<char*> to_argv(std::vector<std::string>& arguments){
+	inline std::vector<char*> to_argv(std::vector<std::string>& arguments) {
 		std::vector<char*> toreturn;
-		for(auto& arg: arguments){
+		for(auto& arg : arguments){
 			toreturn.push_back(&arg[0]);
 		}
 		toreturn.push_back(nullptr);
 		return toreturn;
 	}
 
-	std::size_t create_menu_items(CajaMenu& menu_root, const std::vector<CajaFileInfo*>& file_infos, const std::vector<command_and_menu>& parsers);
+	std::size_t create_menu_items(CajaMenu& menu_root, const std::vector<CajaFileInfo*>& file_infos,
+	                              const std::vector<command_and_menu>& parsers);
 
 
 	/// Registered callback function when user clicks on menu item
-	void menu_callback (CajaMenuItem *item, CajaFileInfo *file);
+	void menu_callback(CajaMenuItem* item, CajaFileInfo* file);
 	void generic_gui_callback(CajaMenuItem* item, gpointer file_);
 	void generic_mateterm_callback(CajaMenuItem* item, gpointer ptr);
 }
