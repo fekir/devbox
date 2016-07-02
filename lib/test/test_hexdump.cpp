@@ -56,7 +56,7 @@ TEST_CASE("dump_binary", "[dump][hex][binary]"){
 	auto orig = hexdump::undump(d);
 
 	REQUIRE(orig.size() == 1000);
-	for(int i = 0; i != 1000; ++i){
+	for(std::size_t i = 0; i != 1000; ++i){
 		REQUIRE(orig.at(i) == vec.at(i));
 	}
 }
