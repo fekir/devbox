@@ -30,6 +30,7 @@
 
 // std
 #include <iostream>
+#include <functional>
 
 TEST_CASE("filematcher", ""){
 	REQUIRE(FNM_NOMATCH != 0);
@@ -71,5 +72,13 @@ TEST_CASE("guiprogram", "[.]"){
 TEST_CASE("emptydirname", "[]"){
 	REQUIRE(dir_contains("/", {"tmp"}));
 	REQUIRE(!dir_contains("", {"tmp"}));
+}
 
+
+TEST_CASE("match_with_bind", "[match]"){
+	using namespace std::placeholders;
+	const std::string filename = "testfile.cpp";
+	const auto match_against_filename = std::bind(file_match, _1, filename);
+	const auto res = std::any_of(c_cpp_files.begin(), c_cpp_files.end(), match_against_filename);
+	REQUIRE(res);
 }

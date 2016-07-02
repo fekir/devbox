@@ -35,6 +35,7 @@
 
 // cstd
 #include <cstring>
+#include <cassert>
 
 // std
 #include <string>
@@ -73,6 +74,12 @@ inline std::string get_path(const std::string& file_info){
 	return file_info.substr(0, last_slash + 1);
 }
 
+inline bool file_match(const std::string& pattern, const std::string& file_name){
+	int res = fnmatch(pattern.c_str(), file_name.c_str(), 0);
+	assert(res == 0 || res == FNM_NOMATCH);
+	return res == 0;
+}
+
 /// return name of file
 /// removes path if present
 inline std::string get_name(std::string file_info){
@@ -98,6 +105,18 @@ inline std::string get_mimetype(CajaFileInfo* file_info){
 	return (myme_type == nullptr) ? "" : myme_type.get();
 }
 
+struct compare_mimetype{
+	std::string mimetype;
+	explicit compare_mimetype(const std::string& mime) : mimetype(mime){}
+	bool operator()(CajaFileInfo* f){
+		return get_mimetype(f)!=mimetype_jpeg;
+	}
+};
+
+inline std::string to_string(const dirent& dir){
+	return dir.d_name == nullptr ? "" : dir.d_name;
+}
+
 // searches if at least on of the asked file is present
 inline bool dir_contains(const std::string& directory, const std::vector<std::string>& files){
 	const DIR_handle dirp(opendir(directory.c_str()));
@@ -106,7 +125,7 @@ inline bool dir_contains(const std::string& directory, const std::vector<std::st
 	}
 	dirent* dp = readdir(dirp.get());
 	while(dp != nullptr){
-		if(std::find(files.begin(), files.end(), std::string(dp->d_name ? dp->d_name : "")) != files.end()){
+		if(std::find(files.begin(), files.end(), to_string(*dp)) != files.end()){
 			return true;
 		}
 		dp = readdir(dirp.get());
@@ -121,10 +140,10 @@ inline bool dir_match(const std::string& directory, const std::vector<std::strin
 	}
 	dirent* dp = readdir(dirp.get());
 	while(dp != nullptr){
-		const std::string file(dp->d_name ? dp->d_name : "");
-		const auto it = std::find_if(matcher.begin(), matcher.end(),
-		                             [&file](const std::string& m){return fnmatch(m.c_str(), file.c_str(), 0) == 0;}
-		);
+		const auto file = to_string(*dp);
+		using namespace std::placeholders;
+		const auto match_against_filename = std::bind(file_match, _1, file);
+		const auto it = std::find_if(matcher.begin(), matcher.end(), match_against_filename);
 		if(it != matcher.end()){
 			return true;
 		}
@@ -157,17 +176,18 @@ inline std::vector<std::string> is_cmake_project(const std::vector<CajaFileInfo*
 }
 
 const std::vector<std::string> c_cpp_files = {"*.cpp", "*.hpp", "*.h", "*.c"};
+inline bool is_c_or_cpp_file(CajaFileInfo * f){
+	const auto name = get_name(f);
+	using namespace std::placeholders;
+	const auto match_against_filename = std::bind(file_match, _1, name);
+	return std::any_of(c_cpp_files.begin(), c_cpp_files.end(), match_against_filename);
+}
+
 inline std::vector<std::string> cppcheck_analyze(const std::vector<CajaFileInfo*>& file_infos){
-	const auto lambda1 = [](CajaFileInfo* f){
-		const auto name = get_name(f);
-		return std::any_of(c_cpp_files.begin(), c_cpp_files.end(), [&name](const std::string& file_type){
-			return fnmatch(file_type.c_str(), name.c_str(), 0) == 0;
-		});
-	};
-	if(!std::any_of(file_infos.begin(), file_infos.end(), lambda1)){
+	if(!std::any_of(file_infos.begin(), file_infos.end(), is_c_or_cpp_file)) {
 		return {};
 	}
-	return { "--enable=all", get_path(file_infos.at(0))};
+	return {"--enable=all", get_path(file_infos.at(0))};
 }
 
 
@@ -198,9 +218,8 @@ inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*>&
 		return {};
 	}
 	std::vector<CajaFileInfo*> file_infos(file_infos_);
-	const auto it = std::remove_if(file_infos.begin(), file_infos.end(),
-	                               [](CajaFileInfo* f){return get_mimetype(f)!=mimetype_jpeg;}
-	        );
+	compare_mimetype comparator(mimetype_jpeg);
+	const auto it = std::remove_if(file_infos.begin(), file_infos.end(), comparator);
 	file_infos.erase(it,file_infos.end());
 
 	std::vector<std::string> to_return; to_return.reserve(file_infos.size());
@@ -225,6 +244,8 @@ inline std::string get_env(const std::string& var){
 	return env == nullptr ? "" : env;
 }
 
+// FIXME: it is not secure as execute, but I have not found any way to execute custom binary inside a graphical console
+//        it also does not remain in history
 inline std::string create_command_for_console(const std::string& program_and_param){
 	const std::string newline = "\"\n\"";
 	const auto separator = "\"" + std::string(80, '#') + "\n\"";
