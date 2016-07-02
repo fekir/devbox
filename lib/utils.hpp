@@ -135,7 +135,7 @@ inline bool dir_match(const std::string& directory, const std::vector<std::strin
 
 
 const std::vector<std::string> cmake_files = {"CMakeLists.txt", "CMakeFiles", "CMakeCache.txt"};
-inline std::vector<std::string> is_cmake_project(const std::vector<CajaFileInfo*> file_infos){
+inline std::vector<std::string> is_cmake_project(const std::vector<CajaFileInfo*>& file_infos){
 	if(file_infos.size() != 1){
 		return {};
 	}
@@ -193,7 +193,7 @@ inline std::vector<std::string> is_qt_project(const std::vector<CajaFileInfo*>& 
 	return to_return;
 }
 
-inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*> file_infos_){
+inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*>& file_infos_){
 	if(file_infos_.empty()){
 		return {};
 	}
@@ -213,7 +213,7 @@ inline std::vector<std::string> use_jpeg_optim(const std::vector<CajaFileInfo*> 
 	return to_return;
 }
 
-inline std::vector<std::string> use_valgrind(const std::vector<CajaFileInfo*> file_infos){
+inline std::vector<std::string> use_valgrind(const std::vector<CajaFileInfo*>& file_infos){
 	if(file_infos.size() != 1 || get_mimetype(file_infos.at(0)) != mimetype_exec){
 		return {};
 	}
