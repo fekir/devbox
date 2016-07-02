@@ -22,6 +22,7 @@
 
 // std
 #include <string>
+#include <iostream>
 
 const std::string s0 = "a";
 
@@ -171,3 +172,20 @@ TEST_CASE("trim9", "[string][string_utils][trim]"){
 	REQUIRE(trim(s9) == ltrim(rtrim(s9)));
 	REQUIRE(trim(s9) == rtrim(ltrim(s9)));
 }
+
+
+TEST_CASE("split", "[split]"){
+	const std::string to_split = "a,bb,ccc,dddd,eee,ff,g,,h";
+	const auto res = split(to_split, ',');
+	REQUIRE(res.size() == 9);
+	REQUIRE(res[0] == "a");
+	REQUIRE(res[1] == "bb");
+	REQUIRE(res[2] == "ccc");
+	REQUIRE(res[3] == "dddd");
+	REQUIRE(res[4] == "eee");
+	REQUIRE(res[5] == "ff");
+	REQUIRE(res[6] == "g");
+	REQUIRE(res[7] == "");
+	REQUIRE(res[8] == "h");
+}
+

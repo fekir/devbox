@@ -22,6 +22,8 @@
 #define H_UTILS_0
 
 // local
+#include "string_utils.hpp"
+
 #include "posix_memory.hpp"
 #include "glib_memory.hpp"
 #include "glib_iterator.hpp"
@@ -152,7 +154,6 @@ inline bool dir_match(const std::string& directory, const std::vector<std::strin
 	return false;
 }
 
-
 const std::vector<std::string> cmake_files = {"CMakeLists.txt", "CMakeFiles", "CMakeCache.txt"};
 inline std::vector<std::string> is_cmake_project(const std::vector<CajaFileInfo*>& file_infos){
 	if(file_infos.size() != 1){
@@ -258,4 +259,13 @@ inline std::string create_command_for_console(const std::string& program_and_par
 	command += "exec /bin/bash -i'";
 	return command;
 }
+
+inline std::vector<std::string> get_env_path(){
+	const auto path_ = getenv("PATH");
+	std::string copy_path = (path_ == nullptr ? "" : path_);
+	return split(copy_path, ':');
+}
+
+
+
 #endif

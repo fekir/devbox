@@ -28,6 +28,7 @@
 // std
 #include <string>
 #include <algorithm>
+#include <vector>
 
 
 // array with common spaces, used by trim functions. A lot of UTF characters are missing.
@@ -83,6 +84,24 @@ inline bool mygetline(std::string& l, FILE* fp){
 	// finished reading file, no eol, but eof --> ok
 	l = buffer;
 	return !buffer.empty();
+}
+
+inline std::vector<std::string> split(const std::string& s, const char del = ' '){
+	if(s.empty()){
+		return {};
+	}
+	std::vector<std::string> to_return;
+
+	auto pos_end = s.find(del);
+	auto pos_begin = decltype(pos_end){0};
+
+	while(pos_end != std::string::npos){
+		to_return.emplace_back(s.substr(pos_begin, pos_end - pos_begin));
+		pos_begin = pos_end +1;
+		pos_end = s.find(del, pos_begin);
+	}
+	to_return.emplace_back(s.substr(pos_begin, s.size() - pos_begin));
+	return to_return;
 }
 
 #endif

@@ -31,9 +31,10 @@
 // std
 #include <iostream>
 #include <functional>
+#include <algorithm>
 
 TEST_CASE("filematcher", ""){
-	REQUIRE(FNM_NOMATCH != 0);
+	static_assert(FNM_NOMATCH != 0, "unable to detect error");
 	REQUIRE(fnmatch("*", "hello.txt", 0) == 0);
 	REQUIRE(fnmatch("*.txt", "hello.txt", 0) == 0);
 	REQUIRE(fnmatch("*.txt2", "hello.txt", 0) == FNM_NOMATCH);
@@ -81,4 +82,14 @@ TEST_CASE("match_with_bind", "[match]"){
 	const auto match_against_filename = std::bind(file_match, _1, filename);
 	const auto res = std::any_of(c_cpp_files.begin(), c_cpp_files.end(), match_against_filename);
 	REQUIRE(res);
+}
+
+
+TEST_CASE("getpath", "[path]"){
+	auto path = get_env_path();
+
+	// FIXME: not very robust as test, but better than nothing
+	REQUIRE(std::find(path.begin(), path.end(), "/usr/bin") != path.end());
+	REQUIRE(std::find(path.begin(), path.end(), "/usr/local/bin") != path.end());
+	REQUIRE(std::find(path.begin(), path.end(), "/bin") != path.end());
 }
