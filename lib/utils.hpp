@@ -261,11 +261,19 @@ inline std::string create_command_for_console(const std::string& program_and_par
 }
 
 inline std::vector<std::string> get_env_path(){
-	const auto path_ = getenv("PATH");
-	std::string copy_path = (path_ == nullptr ? "" : path_);
-	return split(copy_path, ':');
+	const auto path = get_env("PATH");
+	return split(path, ':');
 }
 
+inline std::string find_executable(const std::vector<std::string>& path, const std::string& filename){
+	for(const auto& p : path){
+		const std::string name = p + "/" + filename;
+		if(access( name.c_str(), X_OK ) != -1 ){
+			return name;
+		}
+	}
+	return "";
+}
 
 
 #endif

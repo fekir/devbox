@@ -95,13 +95,33 @@ namespace menu{
 		cm_type.push_back(type);
 
 
+		const auto env_path = get_env_path();
 		// add cmake parser, there should be a check for getting list of installed programs...
-		parsers.emplace_back("/usr/bin/cmake-gui", is_cmake_project, false);
-		parsers.emplace_back("/usr/bin/qtcreator", is_qt_project, false);
-		parsers.emplace_back("/usr/bin/jpegoptim", use_jpeg_optim, true);
-		parsers.emplace_back("/usr/bin/cppcheck", cppcheck_analyze, true);
-		parsers.emplace_back("/usr/bin/valkyrie", use_valgrind, false);
-
+		const auto cmake_gui = find_executable(env_path, "cmake-gui");
+		if(!cmake_gui.empty()) {
+			parsers.emplace_back(cmake_gui, is_cmake_project, false);
+		}
+		const auto qt_creator = find_executable(env_path, "qtcreator");
+		if(!qt_creator.empty()){
+			parsers.emplace_back(qt_creator, is_qt_project, false);
+		}
+		const auto jpegoptim = find_executable(env_path, "jpegoptim");
+		if(!jpegoptim.empty()){
+			parsers.emplace_back(jpegoptim, use_jpeg_optim, true);
+		}
+		const std::string cppcheck = find_executable(env_path, "cppcheck");
+		if(!cppcheck.empty()){
+			parsers.emplace_back(cppcheck, cppcheck_analyze, true);
+		}
+		const std::string valkyrie = find_executable(env_path, "valkyrie");
+		if(!valkyrie.empty()){
+			parsers.emplace_back(valkyrie, use_valgrind, false);
+		}else{
+			const std::string valgrind = find_executable(env_path, "valgrind");
+			if(!valgrind.empty()){
+				parsers.emplace_back(valgrind, use_valgrind, true);
+			}
+		}
 	}
 
 	void context_menu_class_init(gpointer g_class, gpointer class_data){
@@ -238,7 +258,7 @@ namespace menu{
 			const std::string tip = !v.menu_tip.empty() ? v.menu_tip :
 			                                              "Open with " + program;
 			CajaMenuItem* menu = caja_menu_item_new(
-				title.c_str(), label.c_str(), tip.c_str(), v.menu_icon.c_str());
+			    title.c_str(), label.c_str(), tip.c_str(), v.menu_icon.c_str());
 
 			// these info needs to be generated from command_and_menu -- currently works for cmake and qtcreator
 			command_to_execute* toadd2 = new command_to_execute;
