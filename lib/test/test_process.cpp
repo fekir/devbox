@@ -23,16 +23,18 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-TEST_CASE("echo_", "[process][echo]") {
+// test is hidden since it outputs on the terminal
+TEST_CASE("echo_", "[process][echo][.]") {
 	const auto pid = ::fork();
 	REQUIRE(pid != -1);
 	if(pid == 0){
 		exit_on_exit_in_child _;
-		execute("/bin/echo", environ_var(), {"a", "b"});
+		execute("/bin/echo", environ_var(), {"a", "b"}); //
 	}
 }
 
-TEST_CASE("echo__", "[process][echo]") {
+// test is hidden since it outputs on the terminal
+TEST_CASE("echo__", "[process][echo][.]") {
 	const auto pid = ::fork();
 	REQUIRE(pid != -1);
 	if(pid == 0){
@@ -53,8 +55,8 @@ TEST_CASE("echo", "[process][echo]") {
 }
 
 
-
-TEST_CASE("mate-terminal", "[process][mate-terminal]") {
+// test is hidden since it opens a terminal, doe not work yet
+TEST_CASE("mate-terminal", "[process][mate-terminal][.]") {
 
 	exec_params p;
 	p.waitfinishes = true;
