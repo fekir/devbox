@@ -164,7 +164,7 @@ inline exec_result fork_and_execute(std::string program, const exec_params& p){
 	return res;
 }
 
-
+// FIXME: this is a test function (it does not work currently)
 inline exec_result fork_and_execute_in_mate_term(std::string program, const exec_params& p){
 	exec_result res; (void)p; (void)program;
 

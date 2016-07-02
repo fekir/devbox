@@ -35,9 +35,8 @@
 
 /*
 	Type safe class for hexdumps
-	TODO: static_assert swap operator
-	TODO: template constructor with iterators
-	TODO: spacing options, prepend 0x, ...
+	TODO: add static_assert swap operator
+	TODO: add spacing options, prepend 0x, ... (when converting to string)
 	TODO: add cbegin, cend
 */
 
@@ -48,7 +47,7 @@ namespace details{
 	inline constexpr std::array<char,2> to_hex(const unsigned char c) noexcept {
 		static_assert(((std::numeric_limits<unsigned char>::max() & 0xff) >> 4 )<16, "Impossible");
 		static_assert(((std::numeric_limits<unsigned char>::max() & 0x0f)      )<16, "Impossible");
-		return {lut[(c & 0xff) >> 4], lut[c & 0x0f]};
+		return {{lut[(c & 0xff) >> 4], lut[c & 0x0f]}};
 	}
 
 	/// if random access iterator:
@@ -102,7 +101,7 @@ public:
 	///   char, unsigned char and signed char
 	template<class iter>
 	static hexdump dump(iter begin, iter end){
-		// compile check iterators
+		// check iterators
 		using value_type_with_qualifier = typename std::decay<decltype(*begin)>::type;
 		using value_type = typename std::remove_cv<value_type_with_qualifier>::type;
 		static_assert( // check type --> remove identifier
@@ -125,7 +124,7 @@ public:
 		return toreturn;
 	}
 
-	// dumps content of std::string
+	/// dumps content of std::string
 	static hexdump dump(const std::string& todump){
 		return dump(todump.begin(), todump.end());
 	}
@@ -133,6 +132,7 @@ public:
 		return dump(todump.begin(), todump.end());
 	}
 
+	/// converts current string to hexdump, throws if current string is not a valid dump
 	static hexdump to_dump(std::string d){
 		std::transform(d.begin(), d.end(), d.begin(), ::toupper);
 		if(!details::isHexString(d)){
@@ -158,7 +158,6 @@ public:
 			const char* q = std::lower_bound(std::begin(lut), std::end(lut), b);
 			assert(*q == b && "not a hex digit");
 
-			// TODO: chiarire cosa fa...
 			assert((((p - lut) << 4) | (q - lut)) <= std::numeric_limits<unsigned char>::max());
 			output.push_back(static_cast<unsigned char>(((p - lut) << 4) | (q - lut)));
 		}
