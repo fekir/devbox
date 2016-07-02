@@ -17,11 +17,6 @@ add_library(${PROJECT_NAME} SHARED
 	${SOURCE_FILES}
 )
 
-
-# create empty list
-list(APPEND additional_includes "")
-analyze_target_with_cppcheck(${PROJECT_NAME} additional_includes)
-
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
 
 set_target_properties(${PROJECT_NAME}
