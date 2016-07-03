@@ -225,12 +225,16 @@ namespace propertypage{
 
 		GList* pages = nullptr;
 
-		if(mimetype == mimetype_sharedlib || mimetype == mimetype_exec){
+		const auto env_path = get_env_path();
+		// add cmake parser, there should be a check for getting list of installed programs...
+		const auto hard_check = find_executable(env_path, "hardening-check");
+
+		if(not hard_check.empty() && (mimetype == mimetype_sharedlib || mimetype == mimetype_exec)){
 			exec_params p;
 			p.args = {get_path(file_info) + "/" + get_name(file_info)};
 			p.captureoutput = true;
 
-			const auto res = fork_and_execute("/usr/bin/hardening-check", p);
+			const auto res = fork_and_execute(hard_check, p);
 			if(res.status != 0){
 				return nullptr;
 			}
