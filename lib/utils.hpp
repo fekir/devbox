@@ -56,14 +56,14 @@ inline std::string get_path(CajaFileInfo* file_info){
 		const std::size_t len = std::strlen(uri.get());
 		if(len >= desktop.size() && desktop.compare(0, desktop.size(), uri.get(), desktop.size()) == 0){
 			const char* home = g_get_home_dir();
-			return home == nullptr ? "" : home;
+			return to_string(home);
 		}
 		const gchar_handle path(g_filename_from_uri(uri.get(), nullptr, nullptr));
-		return path == nullptr ? "" : path.get();
+		return to_string(path.get());
 	}
 	const gchar_handle uri(caja_file_info_get_parent_uri(file_info));
 	const gchar_handle path(g_filename_from_uri(uri.get(), nullptr, nullptr));
-	return path == nullptr ? "" : path.get();
+	return to_string(path.get());
 }
 
 /// return current path if a directory, path to file if file, also handles x-caja-desktop
@@ -116,7 +116,7 @@ struct compare_mimetype{
 };
 
 inline std::string to_string(const dirent& dir){
-	return dir.d_name == nullptr ? "" : dir.d_name;
+	return to_string(dir.d_name);
 }
 
 // searches if at least on of the asked file is present
@@ -240,9 +240,11 @@ inline std::vector<std::string> use_valgrind(const std::vector<CajaFileInfo*>& f
 	return {get_path(file_infos.at(0)) + "/" + get_name(file_infos.at(0))};
 }
 
+/// FIXME: from the return value it's not possible to detect if the variable exists and is empty, or if it does not
+///        ideally we should return a std::optional<std::string>
 inline std::string get_env(const std::string& var){
 	const char* env = std::getenv(var.c_str());
-	return env == nullptr ? "" : env;
+	return to_string(env);
 }
 
 // FIXME: it is not secure as execute, but I have not found any way to execute custom binary inside a graphical console

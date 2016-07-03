@@ -104,4 +104,9 @@ inline std::vector<std::string> split(const std::string& s, const char del = ' '
 	return to_return;
 }
 
+/// use when converting from char* to std::string and char* may be a nullptr, it will be replaced with an empty string
+inline std::string to_string(const char* s){
+	return s == nullptr ? "" : s;
+}
+
 #endif
