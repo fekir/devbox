@@ -23,47 +23,52 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-// test is hidden since it outputs on the terminal
-TEST_CASE("echo_", "[process][echo][.]") {
-	const auto pid = ::fork();
-	REQUIRE(pid != -1);
-	if(pid == 0){
-		exit_on_exit_in_child _;
-		execute("/bin/echo", environ_var(), {"a", "b"}); //
+
+namespace test{
+
+	// test is hidden since it outputs on the terminal
+	TEST_CASE("echo_", "[process][echo][.]") {
+		const auto pid = ::fork();
+		REQUIRE(pid != -1);
+		if(pid == 0){
+			exit_on_exit_in_child _;
+			execute("/bin/echo", environ_var(), {"a", "b"}); //
+		}
 	}
-}
 
-// test is hidden since it outputs on the terminal
-TEST_CASE("echo__", "[process][echo][.]") {
-	const auto pid = ::fork();
-	REQUIRE(pid != -1);
-	if(pid == 0){
-		exit_on_exit_in_child _;
-		execute("/bin/echo", environ_var(), std::string("a"), "b");
+	// test is hidden since it outputs on the terminal
+	TEST_CASE("echo__", "[process][echo][.]") {
+		const auto pid = ::fork();
+		REQUIRE(pid != -1);
+		if(pid == 0){
+			exit_on_exit_in_child _;
+			execute("/bin/echo", environ_var(), std::string("a"), "b");
+		}
 	}
-}
 
-TEST_CASE("echo", "[process][echo]") {
-	exec_params p;
-	p.waitfinishes = true;
-	p.args = {"a", "b c", "c", "d"};
-	p.captureoutput = true;
+	TEST_CASE("echo", "[process][echo]") {
+		exec_params p;
+		p.waitfinishes = true;
+		p.args = {"a", "b c", "c", "d"};
+		p.captureoutput = true;
 
-	const auto res = fork_and_execute("/bin/echo", p);
-	REQUIRE(res.status == 0);
-	REQUIRE(rtrim(res.output) == "a b c c d"); // use rtrim to remove trailing newline
-}
+		const auto res = fork_and_execute("/bin/echo", p);
+		REQUIRE(res.status == 0);
+		REQUIRE(rtrim(res.output) == "a b c c d"); // use rtrim to remove trailing newline
+	}
 
 
-// test is hidden since it opens a terminal, doe not work yet
-TEST_CASE("mate-terminal", "[process][mate-terminal][.]") {
+	// test is hidden since it opens a terminal, doe not work yet
+	TEST_CASE("mate-terminal", "[process][mate-terminal][.]") {
 
-	exec_params p;
-	p.waitfinishes = true;
-	p.args = {"a", "b c", "c", "d"};
-	p.captureoutput = true;
+		exec_params p;
+		p.waitfinishes = true;
+		p.args = {"a", "b c", "c", "d"};
+		p.captureoutput = true;
 
-	const auto res = fork_and_execute_in_mate_term("/bin/echo", p);
-	REQUIRE(res.status == 0);
+		const auto res = fork_and_execute_in_mate_term("/bin/echo", p);
+		REQUIRE(res.status == 0);
+
+	}
 
 }
