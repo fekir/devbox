@@ -229,8 +229,6 @@ namespace menu{
 		exec_params p;
 		p.args = {param1, param2};
 		p.env = environ_var(environ);
-		std::ofstream ofs("/home/df0/caja_ext.txt");
-		ofs << param2;
 
 		fork_and_execute(console, p);
 	}
