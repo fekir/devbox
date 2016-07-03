@@ -42,13 +42,13 @@
 
 // all implementation details for the caja-menu should be here
 namespace propertypage{
-	typedef struct {
+	struct PropertyPage{
 		GObject parent;
-	} PropertyPage;
+	};
 
-	typedef struct {
+	struct PropertyPageClass{
 		GObjectClass parent_class;
-	} PropertyPageClass;
+	};
 
 	void propertypage_register_type(GTypeModule* module);
 

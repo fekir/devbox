@@ -43,13 +43,13 @@ static std::vector<GType> cm_type; // global
 
 // all implementation details for the caja-menu should be here
 namespace menu{
-	typedef struct {
+	struct ContextMenu{
 		GObject parent;
-	} ContextMenu;
+	};
 
-	typedef struct {
+	struct ContextMenuClass{
 		GObjectClass parent_class;
-	} ContextMenuClass;
+	};
 
 	void context_menu_register_type(GTypeModule* module);
 
@@ -87,7 +87,7 @@ namespace menu{
 		check_id_add_func check_if_add;
 		bool executeinterminal = true;
 		explicit command_and_menu(const std::string& program_, const check_id_add_func& func_, const bool executeinterminal_) :
-			program(program_), check_if_add(func_), executeinterminal(executeinterminal_) {}
+		    program(program_), check_if_add(func_), executeinterminal(executeinterminal_) {}
 	};
 
 	struct command_to_execute{
