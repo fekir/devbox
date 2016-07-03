@@ -80,10 +80,10 @@ inline int execute(FILE* file, const environ_var& env, std::vector<std::string> 
 }
 
 // for using const char* and std::string inside the variadic execute
-inline const char* to_str(const std::string& s){
+inline const char* to_c_str(const std::string& s){
 	return s.c_str();
 }
-inline const char* to_str(const char* s){
+inline const char* to_c_str(const char* s){
 	return s;
 }
 
@@ -91,9 +91,9 @@ template<typename... Args>
 inline int execute(const std::string& filename, const environ_var& env, const Args... args){
 	//static_assert(std::is_same<Args..., std::string>::value, "must be stringtype (std::string or const char*)");
 	if(env.getenv() != nullptr){
-		return execle(filename.c_str(), filename.c_str(), to_str(args)..., (char*)NULL, env.getenv());
+		return execle(filename.c_str(), filename.c_str(), to_c_str(args)..., nullptr, env.getenv());
 	}
-	return execlp(filename.c_str(), filename.c_str(), to_str(args)..., (char*)NULL);
+	return execlp(filename.c_str(), filename.c_str(), to_c_str(args)..., nullptr);
 }
 
 // dumb name, but it's what it does
