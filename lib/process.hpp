@@ -100,7 +100,7 @@ inline int execute(const std::string& filename, const environ_var& env, const Ar
 // using _Exit and not _exit or exit for avoiding flushing buffers, deleting tmpfiles, and so on
 struct exit_on_exit_in_child{
 	explicit exit_on_exit_in_child(){}
-	~exit_on_exit_in_child(){
+	[[ noreturn ]] ~exit_on_exit_in_child(){
 		_Exit(EXIT_FAILURE);
 	}
 };
