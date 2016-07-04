@@ -31,26 +31,26 @@ endif()
 include(cppcheck)
 
 find_package(catch REQUIRED)
-include_directories(${CATCH_INCLUDE_DIRS})
+include_directories(SYSTEM ${CATCH_INCLUDE_DIRS})
 
 find_package(GTK2 2.6 REQUIRED gtk)
-include_directories(${GTK2_INCLUDE_DIRS})
+include_directories(SYSTEM ${GTK2_INCLUDE_DIRS})
 
 find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(GLIB REQUIRED glib-2.0)
-include_directories(${GLIB_INCLUDE_DIRS})
+include_directories(SYSTEM ${GLIB_INCLUDE_DIRS})
 #message("${GLIB_INCLUDE_DIRS}")
 
 
 my_check_modules(CAJA REQUIRED libcaja-extension)
-include_directories(${CAJA_INCLUDE_DIRS})
+include_directories(SYSTEM ${CAJA_INCLUDE_DIRS})
 #message(${CAJA_INCLUDE_DIRS})
 
 
 #find_package(CryptoPP REQUIRED)
 find_package(OpenSSL REQUIRED)
-include_directories(${OPENSSL_INCLUDE_DIR})
+include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
 
 set(APP_NAME "DevBox")
 
