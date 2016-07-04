@@ -70,7 +70,9 @@ inline bool mygetline(std::string& l, FILE* fp){
 		std::string tmp(256, '\1');
 		if(fgets(&tmp[0], static_cast<int>(tmp.size()), fp) != nullptr){
 			// fgets does not return lenght, this will not work if tmp contains embedded '\0'
-			const auto len = std::find(tmp.begin(), tmp.end(), '\0') - tmp.begin();
+			const auto len_ = std::find(tmp.begin(), tmp.end(), '\0') - tmp.begin();
+			assert(len_ >= 0);
+			const auto len = static_cast<std::size_t>(len_);
 			if((len > 0) && (tmp.at(len-1) == '\n')){ // read until end of line (what if line ends with '\r'?
 				buffer += std::string(tmp, 0, len-1);
 				l = buffer;
