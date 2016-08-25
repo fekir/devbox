@@ -233,7 +233,7 @@ namespace menu{
 		fork_and_execute(console, p);
 	}
 
-	// apparently neve called, doens't caja reset the connection to a signal?
+	// apparently never called, doens't caja reset the connection to a signal?
 	void closureNotify(gpointer data_, GClosure* closure){
 		(void)closure;
 		auto data = reinterpret_cast<command_to_execute*>(data_);
