@@ -1,3 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.2)
 
-add_subdirectory(caja_plugin)
+if(WIN32)
+else()
+	add_subdirectory(caja_plugin)
+endif()
