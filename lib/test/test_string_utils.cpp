@@ -41,138 +41,142 @@ namespace test{
 	const std::string s8 = "         ";
 	const std::string s9 = "";
 
+	TEST_CASE("rtrim", "[string][string_utils][rtrim]") {
 
-	TEST_CASE("rtrim0", "[string][string_utils][rtrim]"){
-		REQUIRE(rtrim(s0) == s0);
+		SECTION("s0") {
+			REQUIRE(rtrim(s0) == s0);
+		}
+
+		SECTION("s1") {
+			REQUIRE(rtrim(s1) == s1);
+		}
+
+		SECTION("s2") {
+			REQUIRE(rtrim(s2) == "   a");
+		}
+
+		SECTION("s3") {
+			REQUIRE(rtrim(s3) == s3);
+		}
+
+		SECTION("s4") {
+			REQUIRE(rtrim(s4) == "a");
+		}
+
+		SECTION("s5") {
+			REQUIRE(rtrim(s5) == " a");
+		}
+
+		SECTION("s6") {
+			REQUIRE(rtrim(s6) == "a a");
+		}
+
+		SECTION("s7") {
+			REQUIRE(rtrim(s7) == "   a a");
+		}
+
+		SECTION("s8") {
+			REQUIRE(rtrim(s8) == "");
+		}
+
+		SECTION("s9") {
+			REQUIRE(rtrim(s9) == "");
+		}
 	}
 
-	TEST_CASE("rtrim1", "[string][string_utils][rtrim]"){
-		REQUIRE(rtrim(s1) == s1);
-	}
+	TEST_CASE("ltrim", "[string][string_utils][rtrim]") {
+		SECTION("s0") {
+			REQUIRE(ltrim(s0) == "a");
+		}
 
-	TEST_CASE("rtrim2", "[string][string_utils][rtrim]"){
-		REQUIRE(rtrim(s2) == "   a");
-	}
+		SECTION("s1") {
+			REQUIRE(ltrim(s1) == "a");
+		}
 
-	TEST_CASE("rtrim3", "[string][string_utils][ltrim]"){
-		REQUIRE(rtrim(s3) == s3);
-	}
+		SECTION("s2") {
+			REQUIRE(ltrim(s2) == "a ");
+		}
 
-	TEST_CASE("rtrim4", "[string][string_utils][rtrim]"){
-		REQUIRE(rtrim(s4) == "a");
-	}
+		SECTION("s3") {
+			REQUIRE(ltrim(s3) == "a a");
+		}
 
-	TEST_CASE("rtrim5", "[string][string_utils][rtrim]"){
-		REQUIRE(rtrim(s5) == " a");
-	}
+		SECTION("s4") {
+			REQUIRE(ltrim(s4) == s4);
+		}
 
-	TEST_CASE("rtrim6", "[string][string_utils][rtrim]"){
-		REQUIRE(rtrim(s6) == "a a");
-	}
+		SECTION("s5") {
+			REQUIRE(ltrim(s5) == "a   ");
+		}
 
-	TEST_CASE("rtrim7", "[string][string_utils][rtrim]"){
-		REQUIRE(rtrim(s7) == "   a a");
-	}
+		SECTION("s6") {
+			REQUIRE(ltrim(s6) == s6);
+		}
 
-	TEST_CASE("rtrim8", "[string][string_utils][rtrim]"){
-		REQUIRE(rtrim(s8) == "");
-	}
+		SECTION("s7") {
+			REQUIRE(ltrim(s7) == "a a   ");
+		}
 
-	TEST_CASE("rtrim9", "[string][string_utils][rtrim]"){
-		REQUIRE(rtrim(s9) == "");
-	}
+		SECTION("s8") {
+			REQUIRE(ltrim(s8) == "");
+		}
 
-
-	TEST_CASE("ltrim0", "[string][string_utils][ltrim]"){
-		REQUIRE(ltrim(s0) == "a");
-	}
-
-	TEST_CASE("ltrim1", "[string][string_utils][ltrim]"){
-		REQUIRE(ltrim(s1) == "a");
-	}
-
-	TEST_CASE("ltrim2", "[string][string_utils][ltrim]"){
-		REQUIRE(ltrim(s2) == "a ");
-	}
-
-	TEST_CASE("ltrim3", "[string][string_utils][ltrim]"){
-		REQUIRE(ltrim(s3) == "a a");
-	}
-
-	TEST_CASE("ltrim4", "[string][string_utils][ltrim]"){
-		REQUIRE(ltrim(s4) == s4);
-	}
-
-	TEST_CASE("ltrim5", "[string][string_utils][ltrim]"){
-		REQUIRE(ltrim(s5) == "a   ");
-	}
-
-	TEST_CASE("ltrim6", "[string][string_utils][ltrim]"){
-		REQUIRE(ltrim(s6) == s6);
-	}
-
-	TEST_CASE("ltrim7", "[string][string_utils][ltrim]"){
-		REQUIRE(ltrim(s7) == "a a   ");
-	}
-
-	TEST_CASE("ltrim8", "[string][string_utils][ltrim]"){
-		REQUIRE(ltrim(s8) == "");
-	}
-
-	TEST_CASE("ltrim9", "[string][string_utils][ltrim]"){
-		REQUIRE(ltrim(s9) == "");
+		SECTION("s9") {
+			REQUIRE(ltrim(s9) == "");
+		}
 	}
 
 
+	TEST_CASE("trim", "[string][string_utils][trim]") {
+		SECTION("s0") {
+			REQUIRE(trim(s0) == ltrim(rtrim(s0)));
+			REQUIRE(trim(s0) == rtrim(ltrim(s0)));
+		}
 
-	TEST_CASE("trim0", "[string][string_utils][trim]"){
-		REQUIRE(trim(s0) == ltrim(rtrim(s0)));
-		REQUIRE(trim(s0) == rtrim(ltrim(s0)));
-	}
+		SECTION("s1") {
+			REQUIRE(trim(s1) == ltrim(rtrim(s1)));
+			REQUIRE(trim(s1) == rtrim(ltrim(s1)));
+		}
 
-	TEST_CASE("trim1", "[string][string_utils][trim]"){
-		REQUIRE(trim(s1) == ltrim(rtrim(s1)));
-		REQUIRE(trim(s1) == rtrim(ltrim(s1)));
-	}
+		SECTION("s2") {
+			REQUIRE(trim(s2) == ltrim(rtrim(s2)));
+			REQUIRE(trim(s2) == rtrim(ltrim(s2)));
+		}
 
-	TEST_CASE("trim2", "[string][string_utils][trim]"){
-		REQUIRE(trim(s2) == ltrim(rtrim(s2)));
-		REQUIRE(trim(s2) == rtrim(ltrim(s2)));
-	}
+		SECTION("s3") {
+			REQUIRE(trim(s3) == ltrim(rtrim(s3)));
+			REQUIRE(trim(s3) == rtrim(ltrim(s3)));
+		}
 
-	TEST_CASE("trim3", "[string][string_utils][trim]"){
-		REQUIRE(trim(s3) == ltrim(rtrim(s3)));
-		REQUIRE(trim(s3) == rtrim(ltrim(s3)));
-	}
+		SECTION("s4") {
+			REQUIRE(trim(s4) == ltrim(rtrim(s4)));
+			REQUIRE(trim(s4) == rtrim(ltrim(s4)));
+		}
 
-	TEST_CASE("trim4", "[string][string_utils][trim]"){
-		REQUIRE(trim(s4) == ltrim(rtrim(s4)));
-		REQUIRE(trim(s4) == rtrim(ltrim(s4)));
-	}
+		SECTION("s5") {
+			REQUIRE(trim(s5) == ltrim(rtrim(s5)));
+			REQUIRE(trim(s5) == rtrim(ltrim(s5)));
+		}
 
-	TEST_CASE("trim5", "[string][string_utils][trim]"){
-		REQUIRE(trim(s5) == ltrim(rtrim(s5)));
-		REQUIRE(trim(s5) == rtrim(ltrim(s5)));
-	}
+		SECTION("s6") {
+			REQUIRE(trim(s6) == ltrim(rtrim(s6)));
+			REQUIRE(trim(s6) == rtrim(ltrim(s6)));
+		}
 
-	TEST_CASE("trim6", "[string][string_utils][trim]"){
-		REQUIRE(trim(s6) == ltrim(rtrim(s6)));
-		REQUIRE(trim(s6) == rtrim(ltrim(s6)));
-	}
+		SECTION("s7") {
+			REQUIRE(trim(s7) == ltrim(rtrim(s7)));
+			REQUIRE(trim(s7) == rtrim(ltrim(s7)));
+		}
 
-	TEST_CASE("trim7", "[string][string_utils][trim]"){
-		REQUIRE(trim(s7) == ltrim(rtrim(s7)));
-		REQUIRE(trim(s7) == rtrim(ltrim(s7)));
-	}
+		SECTION("s8") {
+			REQUIRE(trim(s8) == ltrim(rtrim(s8)));
+			REQUIRE(trim(s8) == rtrim(ltrim(s8)));
+		}
 
-	TEST_CASE("trim8", "[string][string_utils][trim]"){
-		REQUIRE(trim(s8) == ltrim(rtrim(s8)));
-		REQUIRE(trim(s8) == rtrim(ltrim(s8)));
-	}
-
-	TEST_CASE("trim9", "[string][string_utils][trim]"){
-		REQUIRE(trim(s9) == ltrim(rtrim(s9)));
-		REQUIRE(trim(s9) == rtrim(ltrim(s9)));
+		SECTION("s9") {
+			REQUIRE(trim(s9) == ltrim(rtrim(s9)));
+			REQUIRE(trim(s9) == rtrim(ltrim(s9)));
+		}
 	}
 
 
