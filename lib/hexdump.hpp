@@ -100,7 +100,7 @@ public:
 	/// accepts as input a pair of iterators of type:
 	///   char, unsigned char and signed char
 	template<class iter>
-	static hexdump dump(iter begin, iter end){
+	static hexdump dump(iter begin, const iter end){
 		// check iterators
 		using value_type_with_qualifier = typename std::decay<decltype(*begin)>::type;
 		using value_type = typename std::remove_cv<value_type_with_qualifier>::type;
