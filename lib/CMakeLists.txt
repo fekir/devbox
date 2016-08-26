@@ -31,32 +31,56 @@ add_library(${PROJECT_NAME} ${SOURCE_FILES})
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
 
-set_target_properties(${PROJECT_NAME}
-	PROPERTIES
-	LINK_FLAGS "${CAJA_LDFLAGS} ${CAJA_CFLAGS_OTHER}"
-)
+if( CMAKE_SYSTEM_NAME STREQUAL "Windows" )
 
+else() # may need further checking
+
+	set_target_properties(${PROJECT_NAME}
+		PROPERTIES
+		LINK_FLAGS "${CAJA_LDFLAGS} ${CAJA_CFLAGS_OTHER}"
+	)
+
+endif()
+
+
+# Test Project
+if( CMAKE_SYSTEM_NAME STREQUAL "Windows" )
+	set(PLATFORM_SPECIFIC_TEST_FILES
+	)
+else() # may need further checking
+	set(PLATFORM_SPECIFIC_TEST_FILES
+		test/test_utils.cpp
+		test/test_iterator.cpp
+		test/test_process.cpp
+		test/test_hash.cpp # openssl
+	)
+
+    set(PLATFORM_SPECIFIC_TEST_LIBRARIES
+		${OPENSSL_LIBRARIES}
+	)
+
+    set(PLATFORM_SPECIFIC_LINK_FLAGS
+		"${CAJA_LDFLAGS} ${CAJA_CFLAGS_OTHER}"
+	)
+endif()
 
 set(TEST_FILES
-	test/test_utils.cpp
-	test/test_iterator.cpp
-	test/test_hash.cpp
+	${PLATFORM_SPECIFIC_TEST_FILES}
 	test/test_hexdump.cpp
 	test/test_string_utils.cpp
-	test/test_process.cpp
 )
-
 source_group("Test Files" FILES ${TEST_FILES})
 
 add_definitions( -DTEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test/data/" )
 set(PROJECT_NAME_TEST "${PROJECT_NAME}Test")
 add_executable(${PROJECT_NAME_TEST} test/main.cpp ${SOURCE_FILES} ${TEST_FILES})
-target_link_libraries(${PROJECT_NAME_TEST} ${OPENSSL_LIBRARIES})
+
+target_link_libraries(${PROJECT_NAME_TEST} ${PLATFORM_SPECIFIC_TEST_LIBRARIES})
 
 set_property(TARGET ${PROJECT_NAME_TEST} PROPERTY CXX_STANDARD 11)
 
 set_target_properties(${PROJECT_NAME_TEST}
 	PROPERTIES
-	LINK_FLAGS "${CAJA_LDFLAGS} ${CAJA_CFLAGS_OTHER}"
+	LINK_FLAGS "${PLATFORM_SPECIFIC_LINK_FLAGS}"
 )
 
