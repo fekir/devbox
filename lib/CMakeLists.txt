@@ -2,19 +2,29 @@ cmake_minimum_required(VERSION 3.3)
 
 project(${APP_NAME}_utils CXX)
 
+if( CMAKE_SYSTEM_NAME STREQUAL "Windows" )
+	set(PLATFORM_SPECIFIC_FILES
+	)
+else() # may need further checking
+	set(PLATFORM_SPECIFIC_FILES
+		glib_iterator.hpp
+		glib_memory.hpp
+		gtk_memory.hpp
+		posix_memory.hpp
+		openssl_memory.hpp # openssl
+		utils.hpp
+		utils.cpp
+		posix/process_posix.hpp
+	)
+endif()
+
 
 set(SOURCE_FILES
-	utils.hpp
 	string_utils.hpp
-	glib_iterator.hpp
-	glib_memory.hpp
-	gtk_memory.hpp
-	posix_memory.hpp
-	openssl_memory.hpp
-	utils.cpp
 	hexdump.cpp
 	hexdump.hpp
 	process.hpp
+	${PLATFORM_SPECIFIC_FILES}
 )
 
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
