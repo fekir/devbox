@@ -55,11 +55,11 @@ else() # may need further checking
 		test/test_hash.cpp # openssl
 	)
 
-    set(PLATFORM_SPECIFIC_TEST_LIBRARIES
+	set(PLATFORM_SPECIFIC_TEST_LIBRARIES
 		${OPENSSL_LIBRARIES}
 	)
 
-    set(PLATFORM_SPECIFIC_LINK_FLAGS
+	set(PLATFORM_SPECIFIC_LINK_FLAGS
 		"${CAJA_LDFLAGS} ${CAJA_CFLAGS_OTHER}"
 	)
 endif()
