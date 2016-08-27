@@ -15,18 +15,19 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-/// This package contains utility functions for invoking programs
+#include "catch.hpp"
 
-#ifndef H_PROCESS_0
-#define H_PROCESS_0
+#include "process.hpp"
+#include "string_utils.hpp"
+#include <iostream>
 
 
-#include "process_base.hpp"
+namespace test {
 
-#if defined(WIN32)
-#include "windows/process_windows.hpp"
-#else // FIXME: check how to detect if we are on a POSIX system, if there is no way, use CMake to configure the Project
-#include "posix/process_posix.hpp"
-#endif
+	TEST_CASE("notepad", "[.][process][notepad]") { 
+		const auto res = execute_program(L"C:\\Windows\\notepad.exe", {L"/P", L"file name.txt"});
+		REQUIRE(res);
 
-#endif
+	}
+
+}

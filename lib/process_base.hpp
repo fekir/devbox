@@ -36,6 +36,16 @@ inline std::vector<char*> to_argv(std::string& program, std::vector<std::string>
 	return toreturn;
 }
 
+inline std::vector<wchar_t*> to_argv(std::wstring& program, std::vector<std::wstring>& arguments){
+	std::vector<wchar_t*> toreturn; toreturn.reserve(arguments.size()+2);
+	toreturn.push_back(&program[0]);
+	for(auto& arg : arguments) {
+		toreturn.push_back(&arg[0]);
+	}
+	toreturn.push_back(nullptr);
+	return toreturn;
+}
+
 inline std::vector<char*> to_argv(std::vector<std::string>& arguments){
 	std::vector<char*> toreturn; 
 	toreturn.reserve(arguments.size()+1);
@@ -43,6 +53,51 @@ inline std::vector<char*> to_argv(std::vector<std::string>& arguments){
 		toreturn.push_back(&arg[0]);
 	}
 	toreturn.push_back(nullptr);
+	return toreturn;
+}
+
+inline std::vector<wchar_t*> to_argv(std::vector<std::wstring>& arguments){
+	std::vector<wchar_t*> toreturn;
+	toreturn.reserve(arguments.size()+1);
+	for(auto& arg : arguments) {
+		toreturn.push_back(&arg[0]);
+	}
+	toreturn.push_back(nullptr);
+	return toreturn;
+}
+
+// warning: not really type safe
+inline std::string args_to_str(const std::vector<std::string>& ss, bool parse = false) {
+	std::string toreturn;
+	if (parse) {
+		for (const auto& s : ss) {
+			toreturn += "\"" + s + "\" ";
+		}
+	}
+	else {
+		for (const auto& s : ss) {
+			toreturn += s + ' ';
+		}
+	}
+	return toreturn;
+}
+
+// warning: not really type safe
+inline std::wstring args_to_str(const std::vector<std::wstring>& ss, bool parse = false) {
+	std::wstring toreturn;
+	for (auto it = ss.begin(); it != ss.end(); ++it) {
+		if (parse && it->find(L" ") != std::wstring::npos) {
+			toreturn += L"\"" + *it +L"\"";
+			if (it + 1 != ss.end()) {
+				toreturn+=L" ";
+			}
+		} else {
+			toreturn += *it;
+			if (it + 1 != ss.end()) {
+				toreturn += L" ";
+			}
+		}
+	}
 	return toreturn;
 }
 
@@ -54,5 +109,11 @@ struct environ_var{
 	char* const* getenv() const {return envp;}
 };
 
+struct wenviron_var{
+	wchar_t* const* envp = nullptr;
+	constexpr explicit wenviron_var(wchar_t* const envp_[]) : envp(envp_){}
+	constexpr explicit wenviron_var(){}
+	wchar_t* const* getenv() const {return envp;}
+};
 
 #endif

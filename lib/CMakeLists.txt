@@ -4,6 +4,7 @@ project(${APP_NAME}_utils CXX)
 
 if( CMAKE_SYSTEM_NAME STREQUAL "Windows" )
 	set(PLATFORM_SPECIFIC_FILES
+		windows/process_windows.hpp
 	)
 else() # may need further checking
 	set(PLATFORM_SPECIFIC_FILES
@@ -32,7 +33,9 @@ add_library(${PROJECT_NAME} ${SOURCE_FILES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
 
 if( CMAKE_SYSTEM_NAME STREQUAL "Windows" )
-
+	set(PLATFORM_SPECIFIC_TEST_FILES
+		test/test_process_windows.cpp
+	)
 else() # may need further checking
 
 	set_target_properties(${PROJECT_NAME}
