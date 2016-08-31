@@ -34,14 +34,18 @@
 #include <vector>
 #include <algorithm>
 
+template<class glist>
+constexpr void static_assert_is_glist_or_sglist(){
+	static_assert(std::is_same<glist,GList>::value || std::is_same<glist,GSList>::value,
+	"function overloaded only for GList and GSList");
+}
 
-#define is_glist_or_sglist(glist) static_assert(std::is_same<glist,GList>::value || std::is_same<glist,GSList>::value, "function overload only for GList and GSList")
 
 /// Return true if a GList/GSList is empty, false otherwise
 /// Overload of the std::empty function
 template<class glist>
 inline bool empty(const glist* list){
-	is_glist_or_sglist(glist);
+	static_assert_is_glist_or_sglist<glist>();
 	return list == nullptr;
 }
 
@@ -146,7 +150,7 @@ class GListForwardIterator {
 public:
 	explicit GListForwardIterator() {}
 	explicit GListForwardIterator(const glist* p) : node(p) {
-		is_glist_or_sglist(glist);
+		static_assert_is_glist_or_sglist<glist>();
 	}
 	GListForwardIterator(const GListForwardIterator& other) : node(other.node) {}
 	GListForwardIterator& operator=(GListForwardIterator other) { std::swap(node, other.node); return *this; }
@@ -199,13 +203,13 @@ inline GListForwardIterator<GSList> begin(const GSList* list){
 /// Overload of the std::end function
 template<class glist>
 inline GListForwardIterator<glist> end(glist* list){
-	is_glist_or_sglist(glist);
+	static_assert_is_glist_or_sglist<glist>();
 	(void)list;
 	return GListForwardIterator<glist>(nullptr);
 }
 template<class glist>
 inline GListForwardIterator<glist> end(const glist* list){
-	is_glist_or_sglist(glist);
+	static_assert_is_glist_or_sglist<glist>();
 	(void)list;
 	return GListForwardIterator<glist>(nullptr);
 }
@@ -227,7 +231,7 @@ GList* to_GList(const std::vector<T*>& vec){
 /// T needs to be a POD type
 template<class T, class glist>
 std::vector<T*> to_vector(const glist* list){
-	is_glist_or_sglist(glist);
+	static_assert_is_glist_or_sglist<glist>();
 	std::vector<T*> to_return;
 	std::transform(begin(list), end(list), std::back_insert_iterator<std::vector<T*>>(to_return),
 	               [](const gpointer p){return reinterpret_cast<T*>(p);}
