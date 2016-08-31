@@ -35,7 +35,6 @@
 #include <libcaja-extension/caja-menu.h>
 
 // posix
-#include <fnmatch.h> // fnmatch
 
 // cstd
 #include <cstring>
@@ -51,11 +50,6 @@
 
 
 
-inline bool file_match(const std::string& pattern, const std::string& file_name){
-	int res = fnmatch(pattern.c_str(), file_name.c_str(), 0);
-	assert(res == 0 || res == FNM_NOMATCH);
-	return res == 0;
-}
 
 
 const std::string mimetype_exec("application/x-executable");
@@ -75,44 +69,6 @@ struct compare_mimetype{
 	}
 };
 
-inline std::string to_string(const dirent& dir){
-	return to_string(dir.d_name);
-}
-
-// searches if at least on of the asked file is present
-inline bool dir_contains(const std::string& directory, const std::vector<std::string>& files){
-	const DIR_handle dirp(opendir(directory.c_str()));
-	if(dirp == nullptr){
-		return false;
-	}
-	dirent* dp = readdir(dirp.get());
-	while(dp != nullptr){
-		if(std::find(files.begin(), files.end(), to_string(*dp)) != files.end()){
-			return true;
-		}
-		dp = readdir(dirp.get());
-	}
-	return false;
-}
-
-inline bool dir_match(const std::string& directory, const std::vector<std::string>& matcher){
-	const DIR_handle dirp(opendir(directory.c_str()));
-	if(dirp== nullptr){
-		return false;
-	}
-	dirent* dp = readdir(dirp.get());
-	while(dp != nullptr){
-		const auto file = to_string(*dp);
-		using namespace std::placeholders;
-		const auto match_against_filename = std::bind(file_match, _1, file);
-		const auto it = std::find_if(matcher.begin(), matcher.end(), match_against_filename);
-		if(it != matcher.end()){
-			return true;
-		}
-		dp = readdir(dirp.get());
-	}
-	return false;
-}
 
 const std::vector<std::string> cmake_files = {"CMakeLists.txt", "CMakeFiles", "CMakeCache.txt"};
 inline std::vector<std::string> is_cmake_project(const std::vector<CajaFileInfo*>& file_infos){
