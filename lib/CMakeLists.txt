@@ -17,6 +17,7 @@ else() # may need further checking
 		posix/utils.hpp
 		posix/utils.cpp
 		posix/process_posix.hpp
+		posix/filesystem_utils_caja.hpp
 	)
 endif()
 

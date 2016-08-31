@@ -28,6 +28,8 @@
 #include "glib_memory.hpp"
 #include "glib_iterator.hpp"
 
+#include "filesystem_utils.hpp"
+
 // caja
 #include <libcaja-extension/caja-file-info.h>
 #include <libcaja-extension/caja-menu.h>
@@ -47,24 +49,7 @@
 #include <algorithm>
 #include <iterator>
 
-/// return current path if a directory, path to file if file, also handles x-caja-desktop
-/// on failure (smb:///, sftp, ...) returns empty string
-inline std::string get_path(CajaFileInfo* file_info){
-	if(caja_file_info_is_directory(file_info)){
-		const std::string desktop("x-caja-desktop:///");
-		const gchar_handle uri(caja_file_info_get_uri(file_info));
-		const std::size_t len = std::strlen(uri.get());
-		if(len >= desktop.size() && desktop.compare(0, desktop.size(), uri.get(), desktop.size()) == 0){
-			const char* home = g_get_home_dir();
-			return to_string(home);
-		}
-		const gchar_handle path(g_filename_from_uri(uri.get(), nullptr, nullptr));
-		return to_string(path.get());
-	}
-	const gchar_handle uri(caja_file_info_get_parent_uri(file_info));
-	const gchar_handle path(g_filename_from_uri(uri.get(), nullptr, nullptr));
-	return to_string(path.get());
-}
+
 
 inline bool file_match(const std::string& pattern, const std::string& file_name){
 	int res = fnmatch(pattern.c_str(), file_name.c_str(), 0);
@@ -72,11 +57,6 @@ inline bool file_match(const std::string& pattern, const std::string& file_name)
 	return res == 0;
 }
 
-inline std::string get_name(CajaFileInfo* file_info){
-	gchar_handle n(caja_file_info_get_name(file_info));
-	std::string name = (n == nullptr) ? "" : n.get();
-	return name;
-}
 
 const std::string mimetype_exec("application/x-executable");
 const std::string mimetype_sharedlib("application/x-sharedlib");
