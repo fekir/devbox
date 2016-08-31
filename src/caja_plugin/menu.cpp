@@ -21,6 +21,7 @@
 #include "glib_iterator.hpp"
 #include "glib_memory.hpp"
 #include "process.hpp"
+#include "filesystem_utils.hpp"
 
 // glib
 #include <glib.h>

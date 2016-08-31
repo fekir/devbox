@@ -26,6 +26,9 @@ set(SOURCE_FILES
 	hexdump.cpp
 	hexdump.hpp
 	process.hpp
+	process_base.hpp
+	filesystem_utils.hpp
+	filesystem_utils_base.hpp
 	${PLATFORM_SPECIFIC_FILES}
 )
 
@@ -62,7 +65,7 @@ else() # may need further checking
 
 	set(PLATFORM_SPECIFIC_TEST_LIBRARIES
 		${OPENSSL_LIBRARIES}
-	)
+)
 
 	set(PLATFORM_SPECIFIC_LINK_FLAGS
 		"${CAJA_LDFLAGS} ${CAJA_CFLAGS_OTHER}"
@@ -73,6 +76,7 @@ set(TEST_FILES
 	${PLATFORM_SPECIFIC_TEST_FILES}
 	test/test_hexdump.cpp
 	test/test_string_utils.cpp
+	test/test_filesystem_base.cpp
 )
 source_group("Test Files" FILES ${TEST_FILES})
 

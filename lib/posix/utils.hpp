@@ -66,30 +66,10 @@ inline std::string get_path(CajaFileInfo* file_info){
 	return to_string(path.get());
 }
 
-/// return current path if a directory, path to file if file
-/// a path is a directory if it ends wit '/' (linux)
-inline std::string get_path(const std::string& file_info){
-	const size_t last_slash = file_info.find_last_of("/");
-	if(std::string::npos == last_slash) {
-		return "";
-	}
-	return file_info.substr(0, last_slash + 1);
-}
-
 inline bool file_match(const std::string& pattern, const std::string& file_name){
 	int res = fnmatch(pattern.c_str(), file_name.c_str(), 0);
 	assert(res == 0 || res == FNM_NOMATCH);
 	return res == 0;
-}
-
-/// return name of file
-/// removes path if present
-inline std::string get_name(std::string file_info){
-	const size_t last_slash = file_info.find_last_of("/");
-	if(std::string::npos != last_slash) {
-		file_info.erase(0, last_slash + 1);
-	}
-	return file_info;
 }
 
 inline std::string get_name(CajaFileInfo* file_info){
