@@ -66,7 +66,7 @@ inline std::string get_path(CajaFileInfo* file_info){
 	return to_string(path.get());
 }
 
-/// return current path if a directory, path to file if file, also handles x-caja-desktop
+/// return current path if a directory, path to file if file
 /// a path is a directory if it ends wit '/' (linux)
 inline std::string get_path(const std::string& file_info){
 	const size_t last_slash = file_info.find_last_of("/");
