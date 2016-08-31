@@ -24,8 +24,8 @@
 #include "process_base.hpp"
 #include "string_utils.hpp"
 
-#include <Windows.h>
-#include <WinBase.h>
+#include <windows.h>
+#include <winbase.h>
 
 #include <string>
 #include <vector>
@@ -133,7 +133,7 @@ inline wexec_result execute_program2(const std::wstring& program, const wexec_pa
 		for (;;) {
 			std::string buffer(256, '\0');
 			DWORD bytes_read;
-			if (!ReadFile(stdoutReadHandle, &buffer[0], buffer.size() - 1, &bytes_read, nullptr))
+			if (!ReadFile(stdoutReadHandle, &buffer[0], static_cast<DWORD>(buffer.size() - 1), &bytes_read, nullptr))
 			{
 				break;
 			}
