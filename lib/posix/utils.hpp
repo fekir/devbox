@@ -23,18 +23,11 @@
 
 // local
 #include "string_utils.hpp"
-
-#include "posix_memory.hpp"
-#include "glib_memory.hpp"
-#include "glib_iterator.hpp"
-
 #include "filesystem_utils.hpp"
 
 // caja
 #include <libcaja-extension/caja-file-info.h>
 #include <libcaja-extension/caja-menu.h>
-
-// posix
 
 // cstd
 #include <cstring>
@@ -42,15 +35,6 @@
 
 // std
 #include <string>
-#include <fstream>
-#include <algorithm>
-#include <functional>
-#include <algorithm>
-#include <iterator>
-
-
-
-
 
 const std::string mimetype_exec("application/x-executable");
 const std::string mimetype_sharedlib("application/x-sharedlib");
@@ -63,7 +47,6 @@ struct compare_mimetype{
 		return get_mimetype(f)!=mimetype_jpeg;
 	}
 };
-
 
 const std::vector<std::string> cmake_files = {"CMakeLists.txt", "CMakeFiles", "CMakeCache.txt"};
 inline std::vector<std::string> is_cmake_project(const std::vector<CajaFileInfo*>& file_infos){
