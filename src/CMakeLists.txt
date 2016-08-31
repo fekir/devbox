@@ -1,6 +1,6 @@
-﻿cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.2)
 
-if(WIN32)
+if( CMAKE_SYSTEM_NAME STREQUAL "Windows" )
 else()
 	add_subdirectory(caja_plugin)
 endif()
