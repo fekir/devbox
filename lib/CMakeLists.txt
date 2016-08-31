@@ -50,6 +50,7 @@ endif()
 # Test Project
 if( CMAKE_SYSTEM_NAME STREQUAL "Windows" )
 	set(PLATFORM_SPECIFIC_TEST_FILES
+		test/test_process_windows.cpp
 	)
 else() # may need further checking
 	set(PLATFORM_SPECIFIC_TEST_FILES
