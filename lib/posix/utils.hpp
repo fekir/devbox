@@ -56,11 +56,6 @@ const std::string mimetype_exec("application/x-executable");
 const std::string mimetype_sharedlib("application/x-sharedlib");
 const std::string mimetype_jpeg("image/jpeg");
 
-inline std::string get_mimetype(CajaFileInfo* file_info){
-	gchar_handle myme_type(caja_file_info_get_mime_type(file_info));
-	return (myme_type == nullptr) ? "" : myme_type.get();
-}
-
 struct compare_mimetype{
 	std::string mimetype;
 	explicit compare_mimetype(const std::string& mime) : mimetype(mime){}

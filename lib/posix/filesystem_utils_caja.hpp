@@ -52,9 +52,14 @@ inline std::string get_path(CajaFileInfo* file_info){
 	return to_string(path.get());
 }
 
-
 inline std::string get_name(CajaFileInfo* file_info){
 	gchar_handle n(caja_file_info_get_name(file_info));
 	return  to_string(n.get());
 }
+
+inline std::string get_mimetype(CajaFileInfo* file_info){
+	gchar_handle myme_type(caja_file_info_get_mime_type(file_info));
+	return (myme_type == nullptr) ? "" : myme_type.get();
+}
+
 #endif
