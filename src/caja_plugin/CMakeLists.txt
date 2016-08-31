@@ -2,6 +2,8 @@
 
 project(caja-devbox CXX)
 
+include_directories(../../lib/posix)
+
 set(SOURCE_FILES
 	implementation.cpp
 	menu.hpp

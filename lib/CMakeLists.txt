@@ -7,14 +7,15 @@ if( CMAKE_SYSTEM_NAME STREQUAL "Windows" )
 		windows/process_windows.hpp
 	)
 else() # may need further checking
+	include_directories(posix)
 	set(PLATFORM_SPECIFIC_FILES
-		glib_iterator.hpp
-		glib_memory.hpp
-		gtk_memory.hpp
-		posix_memory.hpp
+		posix/glib_iterator.hpp
+		posix/glib_memory.hpp
+		posix/gtk_memory.hpp
+		posix/posix_memory.hpp
 		openssl_memory.hpp # openssl
-		utils.hpp
-		utils.cpp
+		posix/utils.hpp
+		posix/utils.cpp
 		posix/process_posix.hpp
 	)
 endif()
