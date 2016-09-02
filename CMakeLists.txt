@@ -30,6 +30,7 @@ endif()
 
 include(cppcheck)
 
+# FIXME: should add  ${CATCH_INCLUDE_DIRS} only for test targets
 find_package(catch REQUIRED)
 include_directories(SYSTEM ${CATCH_INCLUDE_DIRS})
 
