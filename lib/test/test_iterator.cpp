@@ -122,7 +122,7 @@ namespace test{
 
 	}
 
-	TEST_CASE("begin", ""){
+	TEST_CASE("begin", "[GList][iterator]"){
 		auto list = create_glist();
 		auto el = g_list_first(list->next->next);
 		auto el2 = begin(list->next->next);
@@ -130,7 +130,7 @@ namespace test{
 		REQUIRE(el->data == *el2);
 	}
 
-	TEST_CASE("count2", ""){
+	TEST_CASE("count2", "[GList][iterator]"){
 		const auto list_ = create_glist();
 		auto list = list_.get();
 		REQUIRE(compare_size(list, 2) > 0);
@@ -138,16 +138,17 @@ namespace test{
 		REQUIRE(compare_size(list, 4) == 0);
 	}
 
-	TEST_CASE("count3", ""){
+	TEST_CASE("count3", "[GList][iterator]"){
 		GList* list = nullptr;
 		REQUIRE(compare_size(list, 5) < 0);
 		REQUIRE(compare_size(list, 0) == 0);
 	}
 
-	TEST_CASE("to_vector", ""){
+	TEST_CASE("to_vector", "[GList]"){
 		const auto list = create_glist();
 		const std::vector<TestStruct*> vec = to_vector<TestStruct>(list.get());
 		REQUIRE(vec.size() == size(list.get()));
+		// pointer comparison(!)
 		REQUIRE(vec.at(0) == list->data);
 		REQUIRE(vec.at(1) == list->next->data);
 	}
