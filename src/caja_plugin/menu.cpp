@@ -70,7 +70,7 @@ namespace menu{
 		// if not set plugins get loaded again and again...
 		info.instance_size = sizeof(ContextMenu);
 		static_assert(std::is_pod<ContextMenu>::value,
-		              "needs to be POD since it is allocated and not inited by Caja");
+		              "needs to be POD since it is allocated and not initiated by Caja");
 		info.n_preallocs = 0;
 		info.instance_init = context_menu_init;
 

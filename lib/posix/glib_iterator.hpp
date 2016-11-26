@@ -43,6 +43,7 @@ constexpr bool is_glist_or_sglist(){
 
 /// Return true if a GList/GSList is empty, false otherwise
 /// Overload of the std::empty function
+/// Prefer, for clarity, correctness and performance reasons, this function if comparing the size with 0
 template<class glist>
 constexpr bool empty(const glist* list){
 	static_assert(is_glist_or_sglist<glist>(), "function overloaded only for GList and GSList");
