@@ -32,14 +32,65 @@
 // std
 #include <iostream>
 
+
+// http://www.gonwan.com/2011/03/12/oop-using-gobject-9-a-dynamic-type/
+
+// module object struct
+typedef struct _FakeModule {
+	GTypeModule parent;
+} FakeModule;
+
+// module class struct
+typedef struct _FakeModuleClass {
+	GTypeModuleClass parent;
+} FakeModuleClass;
+
+
+gboolean fake_module_load(GTypeModule*) {
+	return TRUE;
+}
+
+void fake_module_unload(GTypeModule*) {
+}
+
+static void fake_module_class_init(gpointer klass, gpointer) {
+	GTypeModuleClass* module_class = G_TYPE_MODULE_CLASS(klass);
+	module_class->load = fake_module_load;
+	module_class->unload = fake_module_unload;
+}
+
+static void fake_module_instance_init(GTypeInstance*, gpointer) {
+}
+
+GType fake_module_get_type() {
+	static GType type_id = 0;
+	if (type_id == 0) {
+		static const GTypeInfo type_info = {
+		    sizeof(FakeModuleClass),   // class_size
+		    nullptr,                   // base_init
+		    nullptr,                   // base_finalize
+		    fake_module_class_init,    // class_init
+		    nullptr,                   // class_finalize
+		    nullptr,                   // class_data
+		    sizeof(FakeModule),        // instance_size
+		    0,                         // n_preallocs
+		    fake_module_instance_init, // instance_init
+		    nullptr                    // value_table
+		};
+		type_id = g_type_register_static(
+		    G_TYPE_TYPE_MODULE, "FakeModuleStaticClass", &type_info, static_cast<GTypeFlags>(0));
+	}
+	return type_id;
+}
+
 namespace test{
 
-	TEST_CASE("firstel", "[.]"){
+	TEST_CASE("firstel", ""){
 
 		// FIXME: GLib-GObject-ERROR **: cannot create instance of abstract (non-instantiatable) type 'GTypeModule'
-		auto module = reinterpret_cast<GTypeModuleClass*>(g_object_new(G_TYPE_TYPE_MODULE, nullptr));
-		caja_module_initialize((GTypeModule*)module);
-
+		auto module = reinterpret_cast<GTypeModule*>(g_object_new(fake_module_get_type(), nullptr));
+		//fake_module_class_init(module, nullptr);
+		caja_module_initialize(module);
 		int num = 0;
 		const GType* types = nullptr;
 		caja_module_list_types(&types, &num);
