@@ -41,7 +41,7 @@ namespace test{
 	TestStruct t4 = {15};
 
 
-	GList_handle createlist(){
+	GList_handle create_glist(){
 		GList* list = g_list_prepend(nullptr, &t4);
 		list = g_list_prepend(list, &t3);
 		list = g_list_prepend(list, &t2);
@@ -50,7 +50,7 @@ namespace test{
 		return handle;
 	}
 
-	GSList_handle createslist(){
+	GSList_handle create_sglist(){
 		GSList* list = g_slist_prepend(nullptr, &t4);
 		list = g_slist_prepend(list, &t3);
 		list = g_slist_prepend(list, &t2);
@@ -61,7 +61,7 @@ namespace test{
 
 	TEST_CASE("GList_empty", "[GList][empty]") {
 		// Create GList
-		const auto list = createlist();
+		const auto list = create_glist();
 		REQUIRE(!empty(list.get()));
 
 		GList* list2 = nullptr;
@@ -70,7 +70,7 @@ namespace test{
 
 	TEST_CASE("GSList_empty", "[GList][empty]") {
 		// Create GList
-		const auto list = createslist();
+		const auto list = create_sglist();
 		REQUIRE(!empty(list.get()));
 
 		GSList* list2 = nullptr;
@@ -80,7 +80,7 @@ namespace test{
 
 	TEST_CASE("GList_size", "[GList][size]") {
 		// Create GList
-		auto list_ = createlist();
+		auto list_ = create_glist();
 		auto list = list_.get();
 
 		REQUIRE(size(list) == g_list_length(list));
@@ -100,7 +100,7 @@ namespace test{
 	TEST_CASE("GList_iter1", "[GList][iterator][forward]") {
 
 		// Create GList
-		auto list = createlist();
+		auto list = create_glist();
 
 		// Assure that I've understood how GList works
 		REQUIRE(list->prev == nullptr);
@@ -123,7 +123,7 @@ namespace test{
 	}
 
 	TEST_CASE("begin", ""){
-		auto list = createlist();
+		auto list = create_glist();
 		auto el = g_list_first(list->next->next);
 		auto el2 = begin(list->next->next);
 		REQUIRE(el->data == &t1);
@@ -131,7 +131,7 @@ namespace test{
 	}
 
 	TEST_CASE("count2", ""){
-		const auto list_ = createlist();
+		const auto list_ = create_glist();
 		auto list = list_.get();
 		REQUIRE(compare_size(list, 2) > 0);
 		REQUIRE(compare_size(list, 5) < 0);
@@ -145,7 +145,7 @@ namespace test{
 	}
 
 	TEST_CASE("to_vector", ""){
-		const auto list = createlist();
+		const auto list = create_glist();
 		const std::vector<TestStruct*> vec = to_vector<TestStruct>(list.get());
 		REQUIRE(vec.size() == size(list.get()));
 		REQUIRE(vec.at(0) == list->data);
