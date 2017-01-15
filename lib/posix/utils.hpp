@@ -79,6 +79,14 @@ inline bool is_c_or_cpp_file(CajaFileInfo * f){
 }
 
 inline std::vector<std::string> cppcheck_analyze(const std::vector<CajaFileInfo*>& file_infos){
+	if(file_infos.size() == 1 && caja_file_info_is_directory(file_infos.at(0))){
+		auto file_info = file_infos.at(0);
+		const std::string path = get_path(file_info);
+		// search in current dir for c/cpp files, if found return
+		if(dir_match(path, c_cpp_files)){
+			return {"--enable=all", path};
+		}
+	}
 	if(!std::any_of(file_infos.begin(), file_infos.end(), is_c_or_cpp_file)) {
 		return {};
 	}

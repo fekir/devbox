@@ -54,7 +54,7 @@ inline std::string get_path(CajaFileInfo* file_info){
 
 inline std::string get_name(CajaFileInfo* file_info){
 	gchar_handle n(caja_file_info_get_name(file_info));
-	return  to_string(n.get());
+	return to_string(n.get());
 }
 
 inline std::string get_mimetype(CajaFileInfo* file_info){
