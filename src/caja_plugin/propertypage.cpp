@@ -163,14 +163,15 @@ namespace propertypage{
 		std::array<unsigned char, 2048> buffer;
 		while(!input.eof()){
 			const auto readed = input.read(reinterpret_cast<char*>(&buffer.at(0)), buffer.size()).gcount();
-
+			assert(readed >= 0);
+			const auto unsigned_readed = static_cast<std::make_unsigned<decltype(readed)>::type>(readed);
 			if(input.fail() && !input.eof()){ // something went wrong, but we where not at the end of the file
 				gtk_container_add(GTK_CONTAINER(box), gtk_label_new("An error happende while reading the file"));
 				return box_;
 			}
 
 			for(auto it = evps.begin(); it != evps.end();){
-				const auto res_update = EVP_DigestUpdate(it->get(), &buffer.at(0), readed);
+				const auto res_update = EVP_DigestUpdate(it->get(), &buffer.at(0), unsigned_readed);
 				if(res_update != 1){
 					const std::string hashtype = to_string(EVP_MD_CTX_md(it->get()));
 					std::string error_msg = "Unable to create hash of type " + hashtype + ".";
@@ -188,7 +189,7 @@ namespace propertypage{
 			const std::string hashtype = to_string(EVP_MD_CTX_md(it->get()));
 
 			const int size_ = EVP_MD_CTX_size(it->get());
-			std::vector<unsigned char> md_value(std::max(size_, 0));
+			std::vector<unsigned char> md_value(static_cast<size_t>(std::max(size_, 0)));
 			unsigned int md_len = static_cast<unsigned int>(md_value.size());
 			const auto res_final = EVP_DigestFinal_ex(it->get(), &md_value.at(0), &md_len);
 			if(res_final != 1){
