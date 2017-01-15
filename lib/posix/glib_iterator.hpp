@@ -97,21 +97,15 @@ inline int compare_size(const GList* list, std::size_t to_compare){
 		return to_compare == 0 ? 0 : -1; // to_compare >= size
 	}
 	std::size_t counter = 1;
-	auto el = list->next;
-	while(el != nullptr){
+	for(auto el = list->next; el != nullptr; el = el->next, ++counter){
 		if(counter > to_compare){
 			return 1;
 		}
-		++counter;
-		el = el->next;
 	}
-	el = list->prev;
-	while(el != nullptr){
+	for(auto el = list->prev; el != nullptr; el = el->prev, ++counter){
 		if(counter > to_compare){
 			return 1;
 		}
-		++counter;
-		el = el->prev;
 	}
 	return
 	        counter > to_compare ? 1 :
@@ -128,13 +122,10 @@ inline int compare_size(const GSList* list, std::size_t to_compare){
 		return to_compare == 0 ? 0 : -1; // to_compare >= size
 	}
 	std::size_t counter = 1;
-	auto el = list->next;
-	while(el != nullptr){
+	for(auto el = list->next; el != nullptr; el = el->next, ++counter){
 		if(counter > to_compare){
 			return 1;
 		}
-		++counter;
-		el = el->next;
 	}
 	return
 	        counter > to_compare ? 1 :
